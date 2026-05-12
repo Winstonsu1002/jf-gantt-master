@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-05-12T10:20:23.254Z",
+  "timestamp": "2026-05-12T10:45:50.281Z",
   "tasks": [
     {
       "id": 1766644161654,
@@ -253,7 +253,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 2
+      "customSortIndex": 5
     },
     {
       "id": 1766647954172,
@@ -270,23 +270,23 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 2
+      "customSortIndex": 5
     },
     {
       "id": 1766650513520,
       "name": "商城活動 2 遮放返校日",
       "category": "促銷專案",
-      "func": "DSG",
+      "func": "DSG-D",
       "startYear": 2026,
       "startMonth": 6,
-      "startPeriod": 0,
+      "startPeriod": 2,
       "endYear": 2026,
       "endMonth": 7,
-      "endPeriod": 0,
+      "endPeriod": 2,
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 2,
       "note": "9/15–10/1"
     },
     {
@@ -296,14 +296,14 @@
       "func": "DEV",
       "startYear": 2026,
       "startMonth": 7,
-      "startPeriod": 1,
+      "startPeriod": 2,
       "endYear": 2026,
       "endMonth": 9,
       "endPeriod": 1,
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 2,
       "note": "9/15–10/1"
     },
     {
@@ -429,27 +429,9 @@
       "id": 1766656724270,
       "name": "兒美館展覽",
       "category": "品牌活動",
-      "note": "7/3 開幕",
       "func": "DSG",
       "startYear": 2026,
       "startMonth": 4,
-      "startPeriod": 1,
-      "endYear": 2026,
-      "endMonth": 5,
-      "endPeriod": 1,
-      "eventYear": 2026,
-      "eventMonth": 7,
-      "eventPeriod": 0,
-      "customSortIndex": 1
-    },
-    {
-      "id": 1766656773471,
-      "name": "兒美館展覽",
-      "category": "品牌活動",
-      "note": "7/3 開幕",
-      "func": "OSC-D",
-      "startYear": 2026,
-      "startMonth": 5,
       "startPeriod": 1,
       "endYear": 2026,
       "endMonth": 6,
@@ -457,7 +439,25 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 1
+      "customSortIndex": 1,
+      "note": "7/3 開幕"
+    },
+    {
+      "id": 1766656773471,
+      "name": "兒美館展覽",
+      "category": "品牌活動",
+      "func": "BKN-B",
+      "startYear": 2026,
+      "startMonth": 6,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 6,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 7,
+      "eventPeriod": 0,
+      "customSortIndex": 1,
+      "note": "7/3 開幕"
     },
     {
       "id": 1766658373104,
@@ -508,7 +508,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3
+      "customSortIndex": 6
     },
     {
       "id": 1766659226083,
@@ -525,7 +525,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3
+      "customSortIndex": 6
     },
     {
       "id": 1767067807176,
@@ -626,7 +626,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 4,
       "note": "9/15–10/15"
     },
     {
@@ -643,7 +643,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 4,
       "note": "9/15–10/15"
     },
     {
@@ -660,7 +660,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 4,
       "note": "9/15–10/15"
     },
     {
@@ -677,7 +677,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 4,
       "note": "9/15–10/15"
     },
     {
@@ -686,15 +686,15 @@
       "category": "促銷專案",
       "func": "DSG-B",
       "startYear": 2026,
-      "startMonth": 4,
-      "startPeriod": 2,
+      "startMonth": 6,
+      "startPeriod": 0,
       "endYear": 2026,
       "endMonth": 6,
-      "endPeriod": 0,
+      "endPeriod": 2,
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 2,
       "note": "9/15–10/1"
     },
     {
@@ -711,8 +711,8 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 4,
-      "note": ""
+      "customSortIndex": 3,
+      "note": "8/1–8/10?"
     },
     {
       "id": 1778581158972,
@@ -728,8 +728,8 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 4,
-      "note": ""
+      "customSortIndex": 3,
+      "note": "8/1–8/10?"
     },
     {
       "id": 1778581181639,
@@ -745,8 +745,25 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 4,
-      "note": ""
+      "customSortIndex": 3,
+      "note": "8/1–8/10?"
+    },
+    {
+      "id": 1778581994939,
+      "name": "文博會+實體禮物卡",
+      "category": "品牌活動",
+      "func": "DSG-D",
+      "startYear": 2026,
+      "startMonth": 6,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 6,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 8,
+      "eventPeriod": 0,
+      "customSortIndex": 5,
+      "note": "8/1–8/10"
     }
   ],
   "settings": {
@@ -825,6 +842,16 @@
         "code": "DSG-C",
         "name": "詩宇",
         "color": "#6366f1"
+      },
+      {
+        "code": "BKN-B",
+        "name": "青儒",
+        "color": "#f28864"
+      },
+      {
+        "code": "DSG-D",
+        "name": "思瑋",
+        "color": "#f26464"
       }
     ],
     "projectOrder": [
