@@ -171,6 +171,11 @@
                 <span>⚙️ 設定</span>
             </button>
 
+            <button onclick="loadSharedData()"
+                class="px-3 py-2 text-sm bg-teal-600 text-white border border-teal-700 rounded hover:bg-teal-700 flex items-center gap-1 shadow-sm"
+                title="載入管理員發布的最新排程">
+                <span>🔄 載入共用版本</span>
+            </button>
             <div class="h-6 w-px bg-gray-300 mx-1"></div>
             <button onclick="exportJSON()"
                 class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 flex items-center gap-1">
@@ -2067,6 +2072,40 @@
             };
             reader.readAsText(file);
         }
+
+        // --- Shared Data (data.json) ---
+        async function fetchSharedData() {
+            const res = await fetch('./data.json?t=' + Date.now());
+            if (!res.ok) throw new Error('data.json not found');
+            return await res.json();
+        }
+
+        async function loadSharedData(silent = false) {
+            try {
+                const data = await fetchSharedData();
+                if (!silent) {
+                    if (!confirm(`載入共用版本將覆蓋你目前的本機資料。\n(發布時間：${data.timestamp ? new Date(data.timestamp).toLocaleString('zh-TW') : '未知'})\n\n確定繼續？`)) return;
+                }
+                tasks = data.tasks || [];
+                tasks.forEach(t => { if (t.customSortIndex === undefined) t.customSortIndex = 9999; });
+                settings = data.settings || JSON.parse(JSON.stringify(defaultSettings));
+                if (!settings.projectOrder) settings.projectOrder = [];
+                if (!settings.holidays) settings.holidays = [];
+                saveTasks();
+                saveSettings();
+                init();
+                if (!silent) alert('✅ 已載入共用版本');
+            } catch (e) {
+                if (!silent) alert('❌ 無法取得共用版本：' + e.message);
+            }
+        }
+
+        // Auto-load shared data on first visit (no local data)
+        (async function autoLoadOnFirstVisit() {
+            if (!localStorage.getItem('marketing_tasks_v2')) {
+                await loadSharedData(true);
+            }
+        })();
 
         // --- Passcode Gate ---
         const PASSCODE = '1002';
