@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-05-12T10:45:50.281Z",
+  "timestamp": "2026-05-12T10:47:36.610Z",
   "tasks": [
     {
       "id": 1766644161654,
@@ -764,6 +764,23 @@
       "eventPeriod": 0,
       "customSortIndex": 5,
       "note": "8/1–8/10"
+    },
+    {
+      "id": 1778582848132,
+      "name": "商城活動 2 遮放返校日",
+      "category": "促銷專案",
+      "func": "MKT",
+      "startYear": 2026,
+      "startMonth": 5,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 6,
+      "endPeriod": 0,
+      "eventYear": 2026,
+      "eventMonth": 9,
+      "eventPeriod": 1,
+      "customSortIndex": 2,
+      "note": "9/15–10/1"
     }
   ],
   "settings": {
