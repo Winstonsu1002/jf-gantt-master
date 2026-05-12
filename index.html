@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行銷大區塊甘特圖 (Macro Gantt) V3.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        /* Scrollbar Styling */
+        .gantt-container::-webkit-scrollbar {
+            height: 10px;
+            width: 10px;
+        }
+
+        .gantt-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .gantt-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+            border: 2px solid #f1f1f1;
+        }
+
+        .gantt-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Grid Lines - Show period divisions within months */
+        .grid-lines {
+            background-image:
+                repeating-linear-gradient(to right,
+                    #e2e8f0 0px,
+                    #e2e8f0 1px,
+                    transparent 1px,
+                    transparent calc(100% / 72),
+                    #f1f5f9 calc(100% / 72),
+                    #f1f5f9 calc(100% / 72 + 1px),
+                    transparent calc(100% / 72 + 1px),
+                    transparent calc(200% / 72),
+                    #f1f5f9 calc(200% / 72),
+                    #f1f5f9 calc(200% / 72 + 1px),
+                    transparent calc(200% / 72 + 1px),
+                    transparent calc(300% / 72));
+        }
+
+        /* Modal Backdrop */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Drag & Drop Styles */
+        .project-row {
+            cursor: default;
+        }
+
+        .project-row[draggable="true"] {
+            cursor: move;
+        }
+
+        .project-row.drag-over-top {
+            border-top: 2px solid #3b82f6;
+        }
+
+        .project-row.drag-over-bottom {
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .project-row-placeholder {
+            grid-column: 1 / -1;
+            min-height: 60px;
+            margin: 2px 0;
+        }
+
+        /* Task delete button hover only */
+        .task-bar .task-delete-btn {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+        .task-bar:hover .task-delete-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 h-screen flex flex-col">
+
+    <!-- Passcode Gate -->
+    <div id="passcodeGate" class="fixed inset-0 z-[999] flex items-center justify-center bg-gray-900">
+        <div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-sm flex flex-col items-center gap-6">
+            <div class="flex flex-col items-center gap-1">
+                <span class="text-3xl font-black tracking-tighter text-gray-900">justfont</span>
+                <span class="text-xs text-gray-400 tracking-widest uppercase">Marketing Scheduler</span>
+            </div>
+            <div class="w-full">
+                <input id="passcodeInput" type="password" placeholder="Enter passcode"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-gray-800 transition"
+                    onkeydown="if(event.key==='Enter') checkPasscode()" autocomplete="off" />
+                <p id="passcodeError" class="hidden text-red-500 text-xs text-center mt-2">Incorrect passcode. Try again.</p>
+            </div>
+            <button onclick="checkPasscode()"
+                class="w-full bg-gray-900 text-white rounded-lg py-3 font-semibold hover:bg-black transition">
+                Enter
+            </button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header
+        class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm z-30 flex-wrap gap-4">
+        <div class="flex items-center gap-4">
+            <div>
+                <h1 class="text-xl font-bold text-gray-800 tracking-tight">📅 行銷專案排程表 <span
+                        class="text-xs font-normal text-gray-500 ml-1">V3.1</span></h1>
+            </div>
+            <!-- View Control -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 space-x-2 border border-gray-200 ml-4">
+                <span class="text-xs font-bold text-gray-500 pl-2">檢視起點：</span>
+                <select id="viewStarYear" onchange="updateView()"
+                    class="bg-white text-sm border-gray-300 rounded px-2 py-1 shadow-sm focus:ring-blue-500 focus:border-blue-500"></select>
+                <select id="viewStartMonth" onchange="updateView()"
+                    class="bg-white text-sm border-gray-300 rounded px-2 py-1 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="1">1月</option>
+                    <option value="2">2月</option>
+                    <option value="3">3月</option>
+                    <option value="4">4月</option>
+                    <option value="5">5月</option>
+                    <option value="6">6月</option>
+                    <option value="7">7月</option>
+                    <option value="8">8月</option>
+                    <option value="9">9月</option>
+                    <option value="10">10月</option>
+                    <option value="11">11月</option>
+                    <option value="12">12月</option>
+                </select>
+            </div>
+
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 space-x-2 border border-gray-200 ml-4">
+                <span class="text-xs font-bold text-gray-500 pl-2">分類篩選：</span>
+                <select id="categoryFilter" onchange="renderGantt()"
+                    class="bg-white text-sm border-gray-300 rounded px-2 py-1 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">全部分類</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <button onclick="autoSortByDate()"
+                class="flex items-center px-3 py-2 text-sm text-white bg-purple-600 border border-purple-700 rounded hover:bg-purple-700 transition shadow-sm"
+                title="依照活動日期自動排序專案">
+                <span>📅 依日期排序</span>
+            </button>
+            <button id="sidebarToggle" onclick="toggleSidebar()"
+                class="px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 transition"
+                title="收合/展開側欄">
+                ☰
+            </button>
+            <button onclick="openSettings()"
+                class="flex items-center px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 transition"
+                title="設定分類與職能">
+                <span>⚙️ 設定</span>
+            </button>
+
+            <div class="h-6 w-px bg-gray-300 mx-1"></div>
+            <button onclick="exportJSON()"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 flex items-center gap-1">
+                <span>📦 備份</span>
+            </button>
+            <button onclick="document.getElementById('importFile').click()"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 flex items-center gap-1">
+                <span>📥 還原</span>
+            </button>
+            <input type="file" id="importFile" accept=".json" class="hidden" onchange="importJSON(this)">
+            <div class="h-6 w-px bg-gray-300 mx-1"></div>
+            <button onclick="exportCSV()"
+                class="px-3 py-2 text-sm bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50">匯出
+                CSV</button>
+            <button onclick="exportImage()"
+                class="px-3 py-2 text-sm bg-blue-600 text-white border border-transparent rounded hover:bg-blue-700 shadow-sm flex items-center gap-1">
+                <span>📸 下載圖片</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- Floating Toggle Button (visible when sidebar is collapsed) -->
+        <button id="floatingToggle" onclick="toggleSidebar()"
+            class="hidden fixed left-2 top-20 z-50 bg-gray-800 text-white p-2 rounded-lg shadow-lg hover:bg-gray-700 transition"
+            title="展開側欄">
+            ☰
+        </button>
+
+        <!-- Sidebar: Task Form -->
+        <aside id="mainSidebar"
+            class="w-[320px] bg-white border-r border-gray-200 flex flex-col overflow-y-auto z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] transition-all duration-300 flex-shrink-0">
+            <div class="p-5 border-b border-gray-100 bg-gray-50">
+                <h2 id="formTitle" class="font-bold text-gray-800 flex justify-between items-center">
+                    <span>✨ 新增任務</span>
+                    <button onclick="toggleSidebar()"
+                        class="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-200 transition" title="收合側欄">
+                        ☰
+                    </button>
+                    <button id="cancelEditBtn" onclick="resetForm()"
+                        class="hidden text-xs text-red-500 hover:text-red-700 font-normal">取消編輯</button>
+                </h2>
+            </div>
+
+            <form id="taskForm" onsubmit="handleTaskSubmit(event)" class="p-5 space-y-5">
+                <input type="hidden" id="editTaskId">
+
+                <!-- Project Name with Datalist -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">專案名稱</label>
+                    <div class="relative">
+                        <input type="text" id="pName" list="projectHistory" placeholder="輸入或選擇專案..." required
+                            class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block p-2.5 transition-colors">
+                        <datalist id="projectHistory"></datalist>
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">專案分類</label>
+                    <select id="pCat"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <!-- Populated dynamic -->
+                    </select>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <!-- Function (Color) -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">負責職能</label>
+                    <div id="funcContainer" class="grid grid-cols-2 gap-2">
+                        <!-- Populated dynamic -->
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <!-- Time Range -->
+                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 space-y-3">
+                    <!-- Start -->
+                    <div>
+                        <label class="block text-xs font-bold text-blue-800 mb-1">🚀 籌備開始</label>
+                        <div class="flex gap-1">
+                            <select id="startY" class="w-1/3 border-gray-300 rounded text-xs py-1"></select>
+                            <select id="startM" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center"></select>
+                            <select id="startP" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center">
+                                <option value="0">上旬</option>
+                                <option value="1">中旬</option>
+                                <option value="2">下旬</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- End -->
+                    <div>
+                        <label class="block text-xs font-bold text-blue-800 mb-1">🏁 籌備結束</label>
+                        <div class="flex gap-1">
+                            <select id="endY" class="w-1/3 border-gray-300 rounded text-xs py-1"></select>
+                            <select id="endM" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center"></select>
+                            <select id="endP" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center">
+                                <option value="0">上旬</option>
+                                <option value="1">中旬</option>
+                                <option value="2">下旬</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event date -->
+                <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                    <label class="block text-xs font-bold text-yellow-800 mb-1">⭐ 活動/上線日</label>
+                    <div class="flex gap-1">
+                        <select id="eventY" class="w-1/3 border-gray-300 rounded text-xs py-1"></select>
+                        <select id="eventM" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center"></select>
+                        <select id="eventP" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center">
+                            <option value="0">上旬</option>
+                            <option value="1">中旬</option>
+                            <option value="2">下旬</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn"
+                    class="w-full text-white bg-gray-800 hover:bg-black focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center transition-all bg-gradient-to-r from-gray-700 to-gray-900 shadow-lg">加入排程</button>
+            </form>
+
+            <div class="px-5 pb-10">
+                <div class="flex justify-between items-end mb-2 border-b border-gray-100 pb-1">
+                    <h3 class="font-bold text-sm text-gray-600">任務清單</h3>
+                    <button onclick="clearData()" class="text-[10px] text-red-500 hover:underline">全部清除</button>
+                </div>
+                <ul id="taskList" class="space-y-2 text-xs"></ul>
+            </div>
+        </aside>
+
+        <!-- Main Gantt Area -->
+        <main class="flex-1 bg-white overflow-auto gantt-container relative">
+            <div id="captureArea" class="bg-white p-6 min-w-[1400px] min-h-full">
+                <!-- Gantt Header -->
+                <div class="sticky top-0 bg-white z-[60] pb-2 border-b border-gray-200">
+                    <div class="grid grid-cols-[320px_1fr] border-b-2 border-gray-800">
+                        <div
+                            class="font-bold text-gray-700 py-3 pl-2 flex items-end pb-1 sticky left-0 bg-white z-[61] border-r border-gray-100 shadow-[2px_0_5px_rgba(0,0,0,0.05)]">
+                            專案 / 分類</div>
+                        <div id="timelineHeader"
+                            class="grid grid-cols-12 text-center divide-x divide-gray-200 border-l border-gray-200">
+                            <!-- Dynamic Months will go here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gantt Body -->
+                <div id="ganttBody" class="space-y-1 relative mt-2 pb-10"></div>
+
+                <!-- Legend -->
+                <div id="legendArea"
+                    class="flex flex-wrap gap-4 mt-8 pt-4 border-t border-gray-100 text-xs text-gray-500 justify-end">
+                    <!-- Dynamic Legend -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 modal-backdrop transition-opacity" onclick="closeSettings()"></div>
+        <div
+            class="absolute right-0 top-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 flex flex-col">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h2 class="text-lg font-bold text-gray-800">⚙️ 系統設定</h2>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-8">
+                <!-- Category Management -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-l-4 border-blue-500 pl-2">專案分類 (Categories)
+                    </h3>
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" id="newCatInput" placeholder="新分類名稱"
+                            class="flex-1 border border-gray-300 rounded px-2 text-sm">
+                        <button onclick="addCategory()"
+                            class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">新增</button>
+                    </div>
+                    <ul id="settingsCatList" class="space-y-1"></ul>
+                </div>
+
+                <!-- Function Management -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-l-4 border-purple-500 pl-2">負責職能與顏色
+                        (Functions)</h3>
+                    <div class="flex gap-2 mb-2 items-center relative">
+                        <input type="hidden" id="editFuncIdx" value="-1">
+                        <input type="text" id="newFuncCode" placeholder="代號 (e.g. DATA)"
+                            class="w-16 border border-gray-300 rounded px-2 text-sm uppercase disabled:bg-gray-100 disabled:text-gray-500">
+                        <input type="text" id="newFuncName" placeholder="顯示名稱 (e.g. 數據)"
+                            class="flex-1 border border-gray-300 rounded px-2 text-sm">
+                        <input type="color" id="newFuncColor" class="w-8 h-8 rounded cursor-pointer border-0 p-0"
+                            value="#6366f1">
+                        <button id="funcSubmitBtn" onclick="handleFunctionSubmit()"
+                            class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 whitespace-nowrap">新增</button>
+                        <button id="funcCancelBtn" onclick="resetFuncForm()"
+                            class="hidden text-xs text-red-500 hover:text-red-700 absolute right-16 -top-5">取消編輯</button>
+                    </div>
+                    <ul id="settingsFuncList" class="space-y-1"></ul>
+                </div>
+
+                <!-- Holiday Management -->
+                <div>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2 border-l-4 border-red-500 pl-2">重大假期/節點 (Holidays)
+                    </h3>
+                    <div class="space-y-2 bg-gray-50 p-2 rounded border border-gray-100">
+                        <div class="flex gap-2">
+                            <input type="text" id="holName" placeholder="名稱 (e.g. 過年)"
+                                class="w-1/2 border rounded px-2 text-sm">
+                            <input type="color" id="holColor" class="w-10 rounded cursor-pointer border-0 p-0"
+                                value="#fee2e2"> <!-- red-100 -->
+                            <button onclick="addHoliday()"
+                                class="bg-blue-600 text-white px-3 text-sm rounded hover:bg-blue-700">新增</button>
+                        </div>
+                        <div class="flex gap-1 text-xs items-center">
+                            <span>起：</span>
+                            <select id="holStartY" class="border rounded py-1"></select>
+                            <select id="holStartM" class="border rounded py-1"></select>
+                            <select id="holStartP" class="border rounded py-1">
+                                <option value="0">上</option>
+                                <option value="1">中</option>
+                                <option value="2">下</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-1 text-xs items-center">
+                            <span>迄：</span>
+                            <select id="holEndY" class="border rounded py-1"></select>
+                            <select id="holEndM" class="border rounded py-1"></select>
+                            <select id="holEndP" class="border rounded py-1">
+                                <option value="0">上</option>
+                                <option value="1">中</option>
+                                <option value="2">下</option>
+                            </select>
+                        </div>
+                    </div>
+                    <ul id="settingsHolList" class="space-y-1 mt-2"></ul>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 bg-gray-50">
+                <button onclick="resetDefaultSettings()"
+                    class="w-full py-2 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50">恢復原廠預設值</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Edit Modal -->
+    <div id="projectEditModal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 modal-backdrop transition-opacity" onclick="closeProjectEditModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md relative">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">⚙️ 編輯專案</h2>
+                    <button onclick="closeProjectEditModal()" class="text-gray-400 hover:text-gray-600 text-xl">&times;</button>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- 專案名稱 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">專案名稱</label>
+                        <input type="text" id="projectEditName" 
+                            class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 block p-2.5 transition-colors"
+                            placeholder="輸入專案名稱..." />
+                    </div>
+
+                    <!-- 活動上線日期 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">⭐ 活動/上線日</label>
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+                            <div class="flex gap-1">
+                                <select id="projectEditEventY" class="w-1/3 border-gray-300 rounded text-xs py-1"></select>
+                                <select id="projectEditEventM" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center"></select>
+                                <select id="projectEditEventP" class="w-1/3 border-gray-300 rounded text-xs py-1 text-center">
+                                    <option value="0">上旬</option>
+                                    <option value="1">中旬</option>
+                                    <option value="2">下旬</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 活動期間備註 -->
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">活動期間備註 <span class="text-gray-400 font-normal text-xs">(例: 12/1-1/8)</span></label>
+                        <input type="text" id="projectEditNote" placeholder="輸入日期區間..."
+                            class="w-full bg-white border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 block p-2.5 transition-colors" />
+                    </div>
+
+                    <!-- 提示訊息 -->
+                    <div id="projectEditInfo" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        <p class="text-sm text-blue-800">
+                            <span class="font-semibold">ℹ️ 將更新 <span id="projectEditTaskCount">0</span> 個任務</span>
+                            <br>
+                            <span class="text-xs text-blue-600">專案「<span id="projectEditProjectName"></span>」的所有任務將會同步更新</span>
+                        </p>
+                    </div>
+
+                    <!-- 按鈕區域 -->
+                    <div class="flex gap-3 justify-end pt-2">
+                        <button onclick="closeProjectEditModal()"
+                            class="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-50 transition">
+                            取消
+                        </button>
+                        <button onclick="confirmProjectEdit()"
+                            class="px-4 py-2 text-sm text-white bg-teal-600 border border-teal-700 rounded hover:bg-teal-700 transition shadow-sm">
+                            確認更新
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        // --- Data & State ---
+        let tasks = JSON.parse(localStorage.getItem('marketing_tasks_v2')) || [];
+        // Initialize customSortIndex for old data
+        tasks.forEach(task => {
+            if (task.customSortIndex === undefined) {
+                task.customSortIndex = 9999;
+            }
+        });
+        // Default Settings
+        const defaultSettings = {
+            categories: ['品牌活動', '新品上市', '促銷專案', '社群操作', '展覽活動', '異業合作'],
+            functions: [
+                { code: 'PM', name: 'PM/統籌', color: '#1f2937' },   // gray-800
+                { code: 'MKT', name: '行銷企劃', color: '#eab308' }, // yellow-500
+                { code: 'DSG', name: '視覺設計', color: '#ec4899' }, // pink-500
+                { code: 'DEV', name: '工程開發', color: '#3b82f6' }, // blue-500
+                { code: 'ADS', name: '廣告投放', color: '#8b5cf6' }  // violet-500
+            ],
+            projectOrder: [], // Persistence for order
+            holidays: []
+        };
+        let settings = JSON.parse(localStorage.getItem('marketing_settings_v2')) || defaultSettings;
+        // Ensure projectOrder exists if loading old settings
+        if (!settings.projectOrder) settings.projectOrder = [];
+        if (!settings.holidays) settings.holidays = [];
+
+        // View State（預設為今天所在的年月，避免跑到 2027）
+        const TODAY = new Date();
+        const DEFAULT_VIEW_YEAR = TODAY.getFullYear();
+        const DEFAULT_VIEW_MONTH = TODAY.getMonth() + 1;
+        let viewStartYear = DEFAULT_VIEW_YEAR;
+        let viewStartMonth = DEFAULT_VIEW_MONTH; // 1-12
+
+        // --- Initialization ---
+        function init() {
+            // 預設檢視起點：2026/1
+            // Let's populate year dropdowns
+            populateYearSelects();
+            renderSettingsUI();
+            renderFormOptions();
+            renderGantt(); // renderGantt() 會處理月份標題的渲染
+            renderTaskList();
+            updateDataList();
+            updateCategoryFilter(); // Populate category filter dropdown
+
+            // Init Header Selects
+            document.getElementById('viewStarYear').value = viewStartYear;
+            document.getElementById('viewStartMonth').value = viewStartMonth;
+
+            // Add listener for auto-fill
+            document.getElementById('pName').addEventListener('input', handleProjectNameInput);
+
+            // Populate Holiday Years
+            const holY = ['holStartY', 'holEndY'];
+            const cy = new Date().getFullYear();
+            holY.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = '';
+                    [cy, cy + 1].forEach(y => el.innerHTML += `<option value="${y}">${y}</option>`);
+                    el.value = cy + 1;
+                }
+            });
+            // Populate Holiday Months
+            const holM = ['holStartM', 'holEndM'];
+            holM.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.innerHTML = '';
+                    for (let i = 1; i <= 12; i++) el.innerHTML += `<option value="${i}">${i}</option>`;
+                }
+            });
+        }
+
+        function handleProjectNameInput(e) {
+            const val = e.target.value.trim();
+            if (!val) return;
+
+            // Find existing project with this name
+            // We search from the end (most recent) to get the latest updated info
+            const exist = tasks.slice().reverse().find(t => t.name === val);
+
+            if (exist) {
+                // Auto-fill Category
+                const catEl = document.getElementById('pCat');
+                if (catEl) catEl.value = exist.category;
+
+                // Auto-fill Event Date
+                // We only auto-fill if the fields are present (they should be)
+                setSelectVal('eventY', exist.eventYear);
+                setSelectVal('eventM', exist.eventMonth);
+                setSelectVal('eventP', exist.eventPeriod);
+
+                // Optional: visuals to indicate auto-fill happened?
+                // For now, silent update is fine as user expects memory.
+            }
+        }
+
+        function setSelectVal(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.value = val;
+        }
+
+        function populateYearSelects() {
+            const currentYear = TODAY.getFullYear();
+            const currentMonth = TODAY.getMonth() + 1;
+            const minYear = Math.min(currentYear - 1, DEFAULT_VIEW_YEAR);
+            const maxYear = Math.max(currentYear + 2, DEFAULT_VIEW_YEAR);
+            const years = [];
+            for (let y = minYear; y <= maxYear; y++) years.push(y);
+            const ids = ['viewStarYear', 'startY', 'endY', 'eventY', 'projectEditEventY'];
+
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return; // 如果元素不存在，跳過（例如 Modal 還未顯示時）
+                el.innerHTML = '';
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.text = y + '年';
+                    el.appendChild(opt);
+                });
+                // Set default for inputs
+                if (id === 'viewStarYear') {
+                    el.value = DEFAULT_VIEW_YEAR;
+                } else {
+                    el.value = currentYear;
+                }
+            });
+
+            // Populate Months 1-12 for form
+            const mIds = ['startM', 'endM', 'eventM', 'projectEditEventM'];
+            mIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return; // 如果元素不存在，跳過
+                el.innerHTML = '';
+                for (let i = 1; i <= 12; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.text = i + '月';
+                    el.appendChild(opt);
+                }
+                // default month = 當月
+                el.value = currentMonth;
+            });
+        }
+
+        // --- Core Logic: GPU (Global Period Unit) ---
+        // Formula: Year * 36 + (Month-1)*3 + Period(0,1,2)
+        function normalizePeriod(p) {
+            const n = parseInt(p);
+            return Number.isFinite(n) && n >= 0 && n <= 2 ? n : 0; // 預設上旬避免 NaN 造成整個 bar 消失
+        }
+        function normalizeMonth(m) {
+            const n = parseInt(m);
+            return Number.isFinite(n) && n >= 1 && n <= 12 ? n : 1;
+        }
+        function normalizeYear(y) {
+            const n = parseInt(y);
+            return Number.isFinite(n) ? n : new Date().getFullYear();
+        }
+        function getGPU(year, month, period) {
+            const y = normalizeYear(year);
+            const m = normalizeMonth(month);
+            const p = normalizePeriod(period);
+            return (y * 36) + ((m - 1) * 3) + p;
+        }
+
+        function updateView() {
+            viewStartYear = parseInt(document.getElementById('viewStarYear').value);
+            viewStartMonth = parseInt(document.getElementById('viewStartMonth').value);
+            renderGantt(); // renderGantt() 會處理月份標題的渲染
+        }
+
+        function renderHeaderMonths() {
+            const header = document.getElementById('timelineHeader');
+            header.innerHTML = '';
+            for (let i = 0; i < 12; i++) {
+                let m = viewStartMonth + i;
+                let y = viewStartYear;
+                if (m > 12) {
+                    m -= 12;
+                    y += 1;
+                }
+                const div = document.createElement('div');
+                div.className = 'font-bold text-gray-600 text-xs py-1 bg-white flex flex-col justify-center border-r border-gray-100 last:border-0';
+                // Show Year if Jan or first col
+                const yearLabel = (m === 1 || i === 0) ? `<span class="text-[10px] text-gray-400 font-normal">${y}</span>` : '';
+                div.innerHTML = `${yearLabel}<div>${m}月</div>`;
+                header.appendChild(div);
+            }
+        }
+
+        // --- Gantt Rendering ---
+        function renderGantt() {
+            const container = document.getElementById('ganttBody');
+            // Don't clear innerHTML immediately properly if we want to preserve transitions?
+            // Actually full re-render is fine.
+            // container.innerHTML = ''; <-- We will do this inside the calculation block
+
+
+            if (tasks.length === 0) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-gray-400">
+                    <div class="text-4xl mb-2">📭</div>
+                    <div>目前沒有排程，請從左側新增任務</div>
+                </div>`;
+                return;
+            }
+
+            // Group by Project
+            const grouped = tasks.reduce((acc, task) => {
+                if (!acc[task.name]) acc[task.name] = { cat: task.category, items: [] };
+                acc[task.name].items.push(task);
+                return acc;
+            }, {});
+
+            // Apply category filter
+            const filterCat = document.getElementById('categoryFilter')?.value || '';
+            const filteredGrouped = {};
+            for (const [pName, group] of Object.entries(grouped)) {
+                if (!filterCat || group.cat === filterCat) {
+                    filteredGrouped[pName] = group;
+                }
+            }
+
+            // View Range GPU
+            // Default show 24 months (72 periods) to allow scrolling
+            const VIEW_MONTHS = 24;
+            const TOTAL_COLS = VIEW_MONTHS * 3; // 72
+
+            // 目前視窗起點（固定使用使用者選擇/預設值，不再自動左移到最早任務）
+            let startGPU = getGPU(viewStartYear, viewStartMonth, 0);
+
+            const endGPU = startGPU + TOTAL_COLS;
+
+            // --- Calc Today Line Position ---
+            const today = new Date();
+            const tY = today.getFullYear();
+            const tM = today.getMonth() + 1;
+            const tD = today.getDate();
+
+            // Get precise GPU for today
+            // Period 0: 1-10 (10 days)
+            // Period 1: 11-20 (10 days)
+            // Period 2: 21-End (8~11 days)
+            let tP = 0;
+            let ratioInP = 0;
+            const lastDay = new Date(tY, tM, 0).getDate();
+
+            if (tD <= 10) {
+                tP = 0;
+                ratioInP = (tD - 1) / 10;
+            } else if (tD <= 20) {
+                tP = 1;
+                ratioInP = (tD - 11) / 10;
+            } else {
+                tP = 2;
+                const daysInPeriod = lastDay - 20;
+                ratioInP = (tD - 21) / daysInPeriod;
+            }
+
+            const todayGPU = getGPU(tY, tM, tP);
+            const preciseGPU = todayGPU + ratioInP; // e.g. 505.45
+
+            let todayLineHtml = '';
+            if (preciseGPU >= startGPU && preciseGPU <= (startGPU + TOTAL_COLS)) {
+                // Calculate percentage relative to the TOTAL_COLS grid
+                const pct = ((preciseGPU - startGPU) / TOTAL_COLS) * 100;
+                // Constraints: sidebar is 320px fixed. Grid is flex-1.
+                // We overlay a line on ganttBody which has 'relative'.
+                // Left = 320px + (pct% of (100% - 320px))
+                // Using CSS calc: calc(320px + ((100% - 320px) * 0.452))
+                // Note: pct is 0-100. So we use pct/100
+                todayLineHtml = `<div class="absolute top-0 bottom-0 border-l-2 border-red-500 z-30 pointer-events-none" 
+                                      style="left: calc(320px + ((100% - 320px) * ${pct / 100}));"
+                                      title="Today: ${tY}/${tM}/${tD}">
+                                      <div class="bg-red-500 text-white text-[10px] px-1 rounded-b absolute -top-0 -translate-x-1/2">Today</div>
+                                 </div>`;
+            }
+
+            // Clean & Render Overlay
+            // We prepend this line to the container so it's behind content? No, z-50 puts it in front.
+            // But container is cleared every time.
+            container.innerHTML = todayLineHtml;
+
+            // --- Sort Projects by customSortIndex ---
+            // Convert grouped object to array for sorting
+            const projectsArray = Object.entries(filteredGrouped).map(([pName, group]) => ({
+                name: pName,
+                data: group,
+                sortIndex: group.items[0].customSortIndex !== undefined ? group.items[0].customSortIndex : 9999
+            }));
+
+            // Sort by customSortIndex (ascending)
+            projectsArray.sort((a, b) => a.sortIndex - b.sortIndex);
+
+            // --- Render Timeline Header ---
+            const tlHeader = document.getElementById('timelineHeader');
+            tlHeader.innerHTML = '';
+            tlHeader.parentElement.style.gridTemplateColumns = `320px 1fr`;
+            tlHeader.style.gridTemplateColumns = `repeat(${TOTAL_COLS}, 1fr)`; // 72 Cols
+
+            // Adjust Capture Area Width dynamically
+            document.getElementById('captureArea').style.minWidth = '2800px';
+
+            let curY = viewStartYear;
+            let curM = viewStartMonth;
+
+            for (let i = 0; i < VIEW_MONTHS; i++) {
+                // Each month 3 cols
+                let yLabel = '';
+                if (curM === 1 || i === 0) yLabel = `<span class="text-[10px] text-gray-400 font-normal">${curY}</span>`;
+
+                const mDiv = document.createElement('div');
+                mDiv.className = 'col-span-3 border-r border-gray-200 bg-white flex flex-col justify-center py-1';
+                mDiv.innerHTML = `${yLabel}<span class="font-bold text-gray-700">${curM}月</span>`;
+                tlHeader.appendChild(mDiv);
+
+                curM++;
+                if (curM > 12) { curM = 1; curY++; }
+            }
+
+            // Render projects using sorted array
+            for (let projectIdx = 0; projectIdx < projectsArray.length; projectIdx++) {
+                const project = projectsArray[projectIdx];
+                const pName = project.name;
+                const group = project.data;
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-[320px_1fr] border-b border-gray-100 group hover:bg-zinc-50 transition-colors project-row';
+                row.draggable = true;
+                row.dataset.projectName = pName;
+                row.dataset.projectIndex = projectIdx;
+
+                // Row Header
+                const note = group.items[0].note || ''; // Use note from first item
+                const header = document.createElement('div');
+                header.className = 'py-3 pl-2 pr-4 flex justify-between items-start border-r border-gray-200 relative group/col sticky left-0 bg-white z-40 shadow-[2px_0_5px_rgba(0,0,0,0.05)]';
+                header.innerHTML = `
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                        <div class="drag-handle cursor-move text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" title="拖曳調整順序">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <circle cx="6" cy="4" r="1.5"/>
+                                <circle cx="10" cy="4" r="1.5"/>
+                                <circle cx="6" cy="8" r="1.5"/>
+                                <circle cx="10" cy="8" r="1.5"/>
+                                <circle cx="6" cy="12" r="1.5"/>
+                                <circle cx="10" cy="12" r="1.5"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0 pr-2">
+                             <div class="font-bold text-gray-800 text-sm truncate flex items-center cursor-pointer group/edit" onclick='editProject(${JSON.stringify(pName)});'>
+                                ${pName}
+                                <button onclick='event.stopPropagation(); editProject(${JSON.stringify(pName)});' 
+                                    class="hidden group-hover:inline-block ml-2 text-teal-400 hover:text-teal-600 text-xs p-1 rounded hover:bg-teal-50 transition-opacity"
+                                    title="批次編輯專案">
+                                    ⚙️
+                                </button>
+                                <button onclick='event.stopPropagation(); deleteProject(${JSON.stringify(pName)});' 
+                                    class="hidden group-hover:inline-block ml-2 text-red-400 hover:text-red-600 text-xs p-1 rounded hover:bg-red-50 transition-opacity"
+                                    title="刪除專案">
+                                    🗑️
+                                </button>
+                            </div>
+                            <div class="mt-1 flex gap-1 flex-wrap">
+                                <span class="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">${group.cat}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${note ? `<div class="text-xs font-bold text-red-600 border border-red-200 bg-red-50 px-2 py-1 rounded whitespace-nowrap self-start mt-0.5">${note}</div>` : ''}
+                `;
+                row.appendChild(header);
+
+                // Add drag event listeners
+                setupProjectRowDrag(row, pName);
+
+                // Chart Area
+                const chartArea = document.createElement('div');
+                chartArea.className = 'relative grid-lines h-full py-2';
+                chartArea.style.display = 'grid';
+                chartArea.style.gridTemplateColumns = `repeat(${TOTAL_COLS}, 1fr)`;
+                chartArea.style.gridAutoRows = 'minmax(28px, auto)';
+                chartArea.style.gap = '2px 0';
+
+                // 2. Render Bars
+                group.items.forEach(task => {
+                    const tStart = getGPU(task.startYear, task.startMonth, task.startPeriod);
+                    const tEnd = getGPU(task.endYear, task.endMonth, task.endPeriod);
+
+                    // Calc Grid Position relative to View (只繪製可見區間，避免假期分段錯位)
+                    const visibleStartGPU = Math.max(tStart, startGPU);
+                    const visibleEndGPU = Math.min(tEnd, startGPU + TOTAL_COLS - 1);
+                    const renderSpan = visibleEndGPU - visibleStartGPU + 1;
+                    const renderStart = visibleStartGPU - startGPU + 1; // grid column start (1-based)
+
+                    if (renderSpan <= 0) return; // 不在視窗內
+
+                    const bar = document.createElement('div');
+                    bar.style.gridColumn = `${renderStart} / span ${renderSpan}`;
+
+                    const fColor = settings.functions.find(f => f.code === task.func)?.color || '#999999';
+
+                    // Generate Gradient for Holidays（僅針對可見區間計算，避免對齊偏移）
+                    const totalUnits = renderSpan;
+                    const stops = [];
+                    let lastType = null; // 'solid' or 'faint'
+
+                    for (let i = 0; i < totalUnits; i++) {
+                        const currentGPU = visibleStartGPU + i;
+                        const isHoliday = settings.holidays.some(h => {
+                            const hStart = getGPU(h.startYear, h.startMonth, h.startPeriod);
+                            const hEnd = getGPU(h.endYear, h.endMonth, h.endPeriod);
+                            return currentGPU >= hStart && currentGPU <= hEnd;
+                        });
+                        const type = isHoliday ? 'faint' : 'solid';
+
+                        const startPct = (i / totalUnits) * 100;
+                        const endPct = ((i + 1) / totalUnits) * 100;
+
+                        if (type !== lastType) {
+                            if (lastType !== null) {
+                                stops.push(`${lastType === 'solid' ? fColor : fColor + '4D'} ${startPct.toFixed(2)}%`);
+                            }
+                            stops.push(`${type === 'solid' ? fColor : fColor + '4D'} ${startPct.toFixed(2)}%`);
+                            lastType = type;
+                        }
+
+                        if (i === totalUnits - 1) {
+                            stops.push(`${type === 'solid' ? fColor : fColor + '4D'} ${endPct.toFixed(2)}%`);
+                        }
+                    }
+
+                    if (stops.length > 0) {
+                        bar.style.background = `linear-gradient(to right, ${stops.join(', ')})`;
+                    } else {
+                        bar.style.backgroundColor = fColor;
+                    }
+
+                    bar.className = 'task-bar h-7 rounded-sm shadow-sm flex items-center px-2 pr-6 text-[10px] text-white overflow-hidden whitespace-nowrap relative hover:opacity-90 hover:scale-[1.01] transition transform z-10';
+                    bar.style.cursor = 'grab';
+                    bar.innerHTML = `
+                        <span class="drop-shadow-sm font-medium mr-1 text-shadow-md">${getFuncName(task.func)}</span>
+                    `;
+                    bar.title = `${task.name}: ${task.startY}/${task.startM} - ${task.endY}/${task.endM}`;
+
+                    // Delete button on bar (不影響拖曳)
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'task-delete-btn absolute right-1 top-1 text-[10px] leading-none px-1 rounded bg-black/40 hover:bg-red-500 transition opacity-0';
+                    delBtn.textContent = '×';
+                    delBtn.title = '刪除此任務';
+                    delBtn.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        ev.preventDefault();
+                        const funcName = getFuncName(task.func);
+                        if (confirm(`確定刪除「${funcName}」的任務嗎？`)) {
+                            deleteTask(task.id);
+                        }
+                    });
+                    bar.appendChild(delBtn);
+
+                    // --- Drag & Drop Logic (Task Bar Horizontal Drag) ---
+                    bar.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation(); // Prevent row drag
+
+                        bar.style.cursor = 'grabbing';
+
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        let currentDeltaX = 0;
+                        let hasMoved = false; // 追蹤是否有拖曳動作
+                        const DRAG_THRESHOLD = 5;
+
+                        const chartAreaWidth = chartArea.getBoundingClientRect().width;
+                        const columnWidth = chartAreaWidth / TOTAL_COLS;
+
+                        const originalStartGPU = getGPU(task.startYear, task.startMonth, task.startPeriod);
+                        const taskSpan = tEnd - tStart + 1;
+
+                        const handleMouseMove = (moveEvent) => {
+                            currentDeltaX = moveEvent.clientX - startX;
+                            const deltaY = Math.abs(moveEvent.clientY - startY);
+                            const totalDelta = Math.abs(currentDeltaX) + deltaY;
+
+                            if (totalDelta > DRAG_THRESHOLD) {
+                                hasMoved = true;
+                            }
+
+                            if (hasMoved) {
+                                if (!bar.dataset.originalWidth) {
+                                    bar.dataset.originalWidth = bar.getBoundingClientRect().width + 'px';
+                                }
+                                bar.style.willChange = 'transform';
+                                bar.style.width = bar.dataset.originalWidth;
+                                bar.style.transform = `translateX(${currentDeltaX}px)`;
+                            }
+                        };
+
+                        const handleMouseUp = () => {
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+
+                            bar.style.cursor = 'grab';
+                            bar.style.willChange = '';
+                            if (bar.dataset.originalWidth) {
+                                bar.style.width = '';
+                                delete bar.dataset.originalWidth;
+                            }
+
+                            if (!hasMoved) {
+                                bar.style.transform = '';
+                                editTask(task.id);
+                                return;
+                            }
+
+                            const columnsMoved = Math.round(currentDeltaX / columnWidth);
+
+                            if (columnsMoved !== 0) {
+                                const newStartGPU = originalStartGPU + columnsMoved;
+                                const newEndGPU = newStartGPU + taskSpan - 1;
+
+                                if (newStartGPU >= 1) {
+                                    const newStartYear = Math.floor(newStartGPU / 36);
+                                    const remainder = newStartGPU % 36;
+                                    const newStartMonth = Math.floor(remainder / 3) + 1;
+                                    const newStartPeriod = remainder % 3;
+
+                                    const newEndYear = Math.floor(newEndGPU / 36);
+                                    const endRemainder = newEndGPU % 36;
+                                    const newEndMonth = Math.floor(endRemainder / 3) + 1;
+                                    const newEndPeriod = endRemainder % 3;
+
+                                    const taskIndex = tasks.findIndex(t => t.id === task.id);
+                                    if (taskIndex !== -1) {
+                                        tasks[taskIndex].startYear = newStartYear;
+                                        tasks[taskIndex].startMonth = newStartMonth;
+                                        tasks[taskIndex].startPeriod = newStartPeriod;
+                                        tasks[taskIndex].endYear = newEndYear;
+                                        tasks[taskIndex].endMonth = newEndMonth;
+                                        tasks[taskIndex].endPeriod = newEndPeriod;
+
+                                        saveAndRender();
+                                    }
+                                }
+                            } else {
+                                bar.style.transform = '';
+                            }
+                        };
+
+                        document.addEventListener('mousemove', handleMouseMove);
+                        document.addEventListener('mouseup', handleMouseUp);
+                    });
+
+                    chartArea.appendChild(bar);
+                });
+
+
+                // Render Star (Event) - Deduplicated per Project Group
+                // We collect all unique event dates to handle inconsistent data
+                const uniqueEvents = new Set();
+                group.items.forEach(t => {
+                    uniqueEvents.add(getGPU(t.eventYear, t.eventMonth, t.eventPeriod));
+                });
+
+                uniqueEvents.forEach(tEvent => {
+                    const gridEvent = tEvent - startGPU + 1;
+                    if (gridEvent >= 1 && gridEvent <= TOTAL_COLS) {
+                        const star = document.createElement('div');
+                        star.style.gridColumn = `${gridEvent} / span 1`;
+                        star.style.gridRow = '1 / -1'; // Span all rows in this group
+                        star.className = 'flex justify-center items-center pointer-events-none z-20';
+                        star.innerHTML = '<span class="text-2xl filter drop-shadow hover:scale-125 transition origin-center" title="活動上線日">⭐</span>';
+                        chartArea.appendChild(star);
+                    }
+                });
+
+                row.appendChild(chartArea);
+                container.appendChild(row);
+            }
+
+            renderLegend();
+        }
+
+        // --- Helper: Get Function Name ---
+        function getFuncName(code) {
+            const f = settings.functions.find(x => x.code === code);
+            return f ? f.name : code;
+        }
+
+        // --- Form & Task Management ---
+        function renderFormOptions() {
+            // Cats
+            const catSelect = document.getElementById('pCat');
+            catSelect.innerHTML = settings.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            // Functions
+            const funcDiv = document.getElementById('funcContainer');
+            funcDiv.innerHTML = settings.functions.map((f, idx) => `
+                <label class="cursor-pointer relative">
+                    <input type="radio" name="pFunc" value="${f.code}" class="peer sr-only" ${idx === 0 ? 'checked' : ''}>
+                    <div class="text-[10px] text-center border border-gray-200 rounded py-1.5 transition-all
+                        peer-checked:ring-2 peer-checked:ring-offset-1 peer-checked:font-bold peer-checked:text-white"
+                        style="--tw-ring-color: ${f.color};">
+                        <span class="block peer-checked:hidden text-gray-600">${f.name}</span>
+                        <span class="hidden peer-checked:block" style="background-color:${f.color}">${f.name}</span>
+                    </div>
+                     <div class="absolute inset-0 hidden peer-checked:block rounded -z-10 opacity-100" style="background-color:${f.color}"></div>
+                </label>
+            `).join('');
+        }
+
+        function updateDataList() {
+            const dl = document.getElementById('projectHistory');
+            const uniqueNames = [...new Set(tasks.map(t => t.name))];
+            dl.innerHTML = uniqueNames.map(n => `<option value="${n}">`).join('');
+        }
+
+        function handleTaskSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('editTaskId').value;
+
+            // Get Values
+            const data = {
+                id: id ? parseInt(id) : Date.now(),
+                name: document.getElementById('pName').value.trim(),
+                category: document.getElementById('pCat').value,
+                func: document.querySelector('input[name="pFunc"]:checked').value,
+
+                startYear: parseInt(document.getElementById('startY').value),
+                startMonth: parseInt(document.getElementById('startM').value),
+                startPeriod: parseInt(document.getElementById('startP').value),
+
+                endYear: parseInt(document.getElementById('endY').value),
+                endMonth: parseInt(document.getElementById('endM').value),
+                endPeriod: parseInt(document.getElementById('endP').value),
+
+                eventYear: parseInt(document.getElementById('eventY').value),
+                eventMonth: parseInt(document.getElementById('eventM').value),
+                eventPeriod: parseInt(document.getElementById('eventP').value),
+            };
+
+            // Validation: End > Start
+            const sGPU = getGPU(data.startYear, data.startMonth, data.startPeriod);
+            const eGPU = getGPU(data.endYear, data.endMonth, data.endPeriod);
+            if (eGPU < sGPU) {
+                alert('⚠️ 結束時間不能早於開始時間');
+                return;
+            }
+
+            if (id) {
+                // Update - preserve customSortIndex and note
+                const idx = tasks.findIndex(t => t.id === data.id);
+                if (idx !== -1) {
+                    data.customSortIndex = tasks[idx].customSortIndex !== undefined ? tasks[idx].customSortIndex : 9999;
+                    data.note = tasks[idx].note || '';
+                    tasks[idx] = data;
+                }
+            } else {
+                // Create - inherit note and customSortIndex from project
+                const existingProjectTask = tasks.find(t => t.name === data.name);
+                data.customSortIndex = existingProjectTask ? existingProjectTask.customSortIndex : 9999;
+                data.note = existingProjectTask ? (existingProjectTask.note || '') : '';
+                tasks.push(data);
+            }
+
+            saveTasks();
+            resetForm();
+            renderGantt();
+            renderTaskList();
+            updateDataList();
+            updateCategoryFilter(); // Update filter options when task is added/edited
+        }
+
+        function editTask(id) {
+            const t = tasks.find(x => x.id === id);
+            if (!t) return;
+
+            document.getElementById('editTaskId').value = t.id;
+            document.getElementById('pName').value = t.name;
+            document.getElementById('pCat').value = t.category;
+
+            // Radio
+            const rad = document.querySelector(`input[name="pFunc"][value="${t.func}"]`);
+            if (rad) rad.checked = true;
+
+            // Dates
+            document.getElementById('startY').value = t.startYear || viewStartYear; // fallback for old data
+            document.getElementById('startM').value = t.startMonth;
+            document.getElementById('startP').value = t.startPeriod;
+
+            document.getElementById('endY').value = t.endYear || viewStartYear;
+            document.getElementById('endM').value = t.endMonth;
+            document.getElementById('endP').value = t.endPeriod;
+
+            document.getElementById('eventY').value = t.eventYear || viewStartYear;
+            document.getElementById('eventM').value = t.eventMonth;
+            document.getElementById('eventP').value = t.eventPeriod;
+
+            // UI Change
+            document.getElementById('submitBtn').innerText = '💾 更新任務';
+            document.getElementById('submitBtn').className = "w-full text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5 shadow-lg transition";
+            document.getElementById('formTitle').querySelector('span').innerText = '✏️ 編輯任務';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            // Scroll to form only if needed?
+        }
+
+        function resetForm() {
+            document.getElementById('taskForm').reset();
+            document.getElementById('editTaskId').value = '';
+            document.getElementById('submitBtn').innerText = '加入排程';
+            document.getElementById('submitBtn').className = "w-full text-white bg-gray-800 hover:bg-black font-medium rounded-lg text-sm px-5 py-2.5 shadow-lg transition bg-gradient-to-r from-gray-700 to-gray-900";
+            document.getElementById('formTitle').querySelector('span').innerText = '✨ 新增任務';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+
+            // Restore default Year/Month to「距離今天最近」(今天所在的年月)
+            const y = TODAY.getFullYear();
+            const m = TODAY.getMonth() + 1;
+            ['startY', 'endY', 'eventY'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = y;
+            });
+            ['startM', 'endM', 'eventM'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = m;
+            });
+        }
+
+        function deleteTask(id) {
+            if (!confirm('確定刪除此任務？')) return;
+            tasks = tasks.filter(t => t.id !== id);
+            if (document.getElementById('editTaskId').value == id) resetForm();
+            saveTasks();
+            renderGantt();
+            renderTaskList();
+        }
+
+        // --- Delete Project (with double check) ---
+        function deleteProject(projectName) {
+            // First confirmation
+            if (!confirm(`確定要刪除專案「${projectName}」嗎？\n\n這將會刪除此專案下的所有任務。`)) {
+                return;
+            }
+
+            // Second confirmation (double check)
+            if (!confirm(`⚠️ 再次確認：\n\n確定要刪除專案「${projectName}」及其所有任務嗎？\n\n此操作無法復原！`)) {
+                return;
+            }
+
+            // Delete all tasks with this project name
+            const tasksBefore = tasks.length;
+            tasks = tasks.filter(t => t.name !== projectName);
+            const tasksDeleted = tasksBefore - tasks.length;
+
+            // Reset form if editing a task from this project
+            const editTaskId = document.getElementById('editTaskId').value;
+            if (editTaskId) {
+                const editingTask = tasks.find(t => t.id === parseInt(editTaskId));
+                if (!editingTask) {
+                    resetForm();
+                }
+            }
+
+            // Save and re-render
+            saveTasks();
+            renderGantt();
+            renderTaskList();
+            updateDataList();
+
+            // Show success message
+            alert(`✅ 已刪除專案「${projectName}」\n\n共刪除 ${tasksDeleted} 個任務`);
+        }
+
+        function saveTasks() {
+            localStorage.setItem('marketing_tasks_v2', JSON.stringify(tasks));
+        }
+
+        function saveAndRender() {
+            saveTasks();
+            renderGantt();
+            renderTaskList();
+        }
+
+        // --- Auto Sort by Date ---
+        function autoSortByDate() {
+            // Group tasks by project
+            const grouped = tasks.reduce((acc, task) => {
+                if (!acc[task.name]) acc[task.name] = [];
+                acc[task.name].push(task);
+                return acc;
+            }, {});
+
+            // Convert to array and sort by earliest event date
+            const projectsArray = Object.entries(grouped).map(([pName, items]) => {
+                // Find minimum eventGPU for this project (use eventIdx, fallback to startIdx)
+                const minEventGPU = Math.min(...items.map(t => {
+                    const eventGPU = getGPU(t.eventYear, t.eventMonth, t.eventPeriod);
+                    const startGPU = getGPU(t.startYear, t.startMonth, t.startPeriod);
+                    return eventGPU || startGPU;
+                }));
+                return { name: pName, items, minEventGPU };
+            });
+
+            // Sort by minEventGPU (ascending - earliest first)
+            projectsArray.sort((a, b) => a.minEventGPU - b.minEventGPU);
+
+            // Update customSortIndex for all tasks in each project
+            projectsArray.forEach((project, index) => {
+                project.items.forEach(task => {
+                    task.customSortIndex = index;
+                });
+            });
+
+            // Save and re-render
+            saveAndRender();
+        }
+
+        // --- Project Row Drag & Drop ---
+        let draggedRow = null;
+
+        function setupProjectRowDrag(rowElement, projectName) {
+            rowElement.addEventListener('dragstart', (e) => {
+                // Prevent drag if clicking on task bars (they have their own drag)
+                const target = e.target;
+                if (target.closest('.h-7.rounded-sm') || target.closest('[style*="grid-column"]') || target.closest('.relative.grid-lines')) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                draggedRow = rowElement;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', projectName);
+                rowElement.style.opacity = '0.5';
+            });
+
+            rowElement.addEventListener('dragend', (e) => {
+                if (draggedRow === rowElement) {
+                    rowElement.style.opacity = '1';
+                    draggedRow = null;
+                    
+                    // Remove drag over classes from all rows
+                    document.querySelectorAll('.project-row').forEach(row => {
+                        row.classList.remove('drag-over-top', 'drag-over-bottom');
+                    });
+                }
+            });
+
+            rowElement.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+
+                if (draggedRow && draggedRow !== rowElement) {
+                    const rect = rowElement.getBoundingClientRect();
+                    const midY = rect.top + rect.height / 2;
+                    const mouseY = e.clientY;
+
+                    // Remove previous classes
+                    document.querySelectorAll('.project-row').forEach(row => {
+                        row.classList.remove('drag-over-top', 'drag-over-bottom');
+                    });
+
+                    if (mouseY < midY) {
+                        rowElement.classList.add('drag-over-top');
+                    } else {
+                        rowElement.classList.add('drag-over-bottom');
+                    }
+                }
+            });
+
+            rowElement.addEventListener('dragleave', (e) => {
+                // Only remove class if we're leaving to go to a different element
+                const rect = rowElement.getBoundingClientRect();
+                if (e.clientX < rect.left || e.clientX > rect.right || 
+                    e.clientY < rect.top || e.clientY > rect.bottom) {
+                    rowElement.classList.remove('drag-over-top', 'drag-over-bottom');
+                }
+            });
+
+            rowElement.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (draggedRow && draggedRow !== rowElement) {
+                    const container = rowElement.parentNode;
+                    
+                    // Determine drop position (above or below)
+                    const rect = rowElement.getBoundingClientRect();
+                    const midY = rect.top + rect.height / 2;
+                    const mouseY = e.clientY;
+                    const insertBefore = mouseY < midY;
+
+                    if (insertBefore) {
+                        container.insertBefore(draggedRow, rowElement);
+                    } else {
+                        container.insertBefore(draggedRow, rowElement.nextSibling);
+                    }
+
+                    // Update customSortIndex based on new DOM order
+                    const newRows = Array.from(container.querySelectorAll('.project-row'));
+                    newRows.forEach((row, index) => {
+                        const projName = row.dataset.projectName;
+                        // Update all tasks with this project name
+                        tasks.forEach(task => {
+                            if (task.name === projName) {
+                                task.customSortIndex = index;
+                            }
+                        });
+                    });
+
+                    // Save and re-render
+                    saveAndRender();
+                }
+
+                rowElement.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+        }
+
+        function clearData() {
+            if (confirm('警告：這將清空所有排程資料，確定嗎？')) {
+                tasks = [];
+                saveTasks();
+                resetForm();
+                renderGantt();
+                renderTaskList();
+            }
+        }
+
+        function renderTaskList() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = tasks.slice().reverse().map(t => `
+                <li class="flex justify-between items-center group border-b border-gray-50 pb-1">
+                    <div class="flex-1 min-w-0 mr-2 cursor-pointer hover:text-blue-600" onclick="editTask(${t.id})">
+                        <div class="font-medium truncate text-gray-700">${t.name}</div>
+                        <div class="text-[10px] text-gray-400 flex gap-2">
+                             <span>${getFuncName(t.func)}</span>
+                             <span>${t.startYear}/${t.startM}/${['上', '中', '下'][t.startPeriod]} - ${t.endM}/${['上', '中', '下'][t.endPeriod]}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <button onclick="editTask(${t.id})" class="text-blue-500 hover:text-blue-700">✏️</button>
+                         <button onclick="deleteTask(${t.id})" class="text-gray-400 hover:text-red-500">×</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function renderLegend() {
+            const area = document.getElementById('legendArea');
+            area.innerHTML = '';
+
+            settings.functions.forEach(f => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center';
+                item.innerHTML = `<span class="w-2 h-2 rounded-full mr-1" style="background-color: ${f.color}"></span> ${f.name}`;
+                area.appendChild(item);
+            });
+            area.innerHTML += `<div class="flex items-center ml-2 border-l border-gray-200 pl-2"><span class="text-sm leading-none mr-1">⭐</span> 活動/上線日</div>`;
+        }
+
+        // --- Update Category Filter ---
+        function updateCategoryFilter() {
+            const filterSelect = document.getElementById('categoryFilter');
+            if (!filterSelect) return;
+            const currentValue = filterSelect.value;
+            filterSelect.innerHTML = '<option value="">全部分類</option>';
+            settings.categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                if (cat === currentValue) opt.selected = true;
+                filterSelect.appendChild(opt);
+            });
+        }
+
+        // --- Settings Modal Logic ---
+        function openSettings() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+            renderSettingsParams();
+        }
+        function closeSettings() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            init(); // Re-render everything in case settings changed
+        }
+
+        // --- Project Edit Modal Logic ---
+        function editProject(projectName) {
+            // 找出所有相同專案名稱的任務
+            const projectTasks = tasks.filter(t => t.name === projectName);
+            
+            if (projectTasks.length === 0) {
+                alert('找不到該專案的任務');
+                return;
+            }
+            
+            // 確保年份和月份下拉選單已初始化
+            const currentYear = new Date().getFullYear();
+            const years = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
+            
+            // 初始化年份下拉選單
+            const yearEl = document.getElementById('projectEditEventY');
+            if (yearEl && yearEl.children.length === 0) {
+                yearEl.innerHTML = '';
+                years.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.text = y + '年';
+                    yearEl.appendChild(opt);
+                });
+            }
+            
+            // 初始化月份下拉選單
+            const monthEl = document.getElementById('projectEditEventM');
+            if (monthEl && monthEl.children.length === 0) {
+                monthEl.innerHTML = '';
+                for (let i = 1; i <= 12; i++) {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.text = i + '月';
+                    monthEl.appendChild(opt);
+                }
+            }
+            
+            // 預填表單
+            const firstTask = projectTasks[0];
+            document.getElementById('projectEditName').value = projectName;
+            document.getElementById('projectEditNote').value = firstTask.note || '';
+            document.getElementById('projectEditEventY').value = firstTask.eventYear;
+            document.getElementById('projectEditEventM').value = firstTask.eventMonth;
+            document.getElementById('projectEditEventP').value = firstTask.eventPeriod;
+            
+            // 顯示將更新的任務數量
+            document.getElementById('projectEditTaskCount').textContent = projectTasks.length;
+            document.getElementById('projectEditProjectName').textContent = projectName;
+            
+            // 儲存原始專案名稱（用於更新時比對）
+            document.getElementById('projectEditModal').dataset.originalProjectName = projectName;
+            
+            // 顯示 Modal
+            document.getElementById('projectEditModal').classList.remove('hidden');
+            
+            // 自動聚焦到專案名稱輸入框
+            setTimeout(() => {
+                const nameInput = document.getElementById('projectEditName');
+                nameInput.focus();
+                nameInput.select(); // 自動選取文字方便修改
+                
+                // 支援 Enter 鍵確認更新
+                nameInput.addEventListener('keypress', function handleEnter(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        confirmProjectEdit();
+                        nameInput.removeEventListener('keypress', handleEnter);
+                    }
+                });
+            }, 100);
+        }
+
+        function confirmProjectEdit() {
+            const modal = document.getElementById('projectEditModal');
+            const oldProjectName = modal.dataset.originalProjectName;
+            const newProjectName = document.getElementById('projectEditName').value.trim();
+            const newNote = document.getElementById('projectEditNote').value.trim();
+            const newEventYear = parseInt(document.getElementById('projectEditEventY').value);
+            const newEventMonth = parseInt(document.getElementById('projectEditEventM').value);
+            const newEventPeriod = parseInt(document.getElementById('projectEditEventP').value);
+            
+            // 驗證專案名稱
+            if (!newProjectName || newProjectName === '') {
+                alert('⚠️ 專案名稱不能為空');
+                document.getElementById('projectEditName').focus();
+                return;
+            }
+            
+            // 驗證日期
+            if (!newEventYear || !newEventMonth || newEventPeriod === undefined) {
+                alert('⚠️ 請選擇完整的上線日期');
+                return;
+            }
+            
+            // 檢查年份範圍（當前年份前後 5 年）
+            const currentYear = new Date().getFullYear();
+            if (newEventYear < currentYear - 5 || newEventYear > currentYear + 5) {
+                alert(`⚠️ 上線年份超出合理範圍（${currentYear - 5} - ${currentYear + 5}）`);
+                return;
+            }
+            
+            // 找出所有相同專案名稱的任務
+            const projectTasks = tasks.filter(t => t.name === oldProjectName);
+            
+            if (projectTasks.length === 0) {
+                alert('找不到該專案的任務');
+                closeProjectEditModal();
+                return;
+            }
+            
+            // 確認對話框
+            const periodLabels = ['上旬', '中旬', '下旬'];
+            const confirmMessage = `確定要更新專案「${oldProjectName}」嗎？\n\n將更新 ${projectTasks.length} 個任務：\n- 專案名稱：${oldProjectName} → ${newProjectName}\n- 上線日期：${newEventYear}/${newEventMonth}/${periodLabels[newEventPeriod]}`;
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+            
+            // 批次更新所有相同專案名稱的任務
+            let updateCount = 0;
+            tasks.forEach(task => {
+                if (task.name === oldProjectName) {
+                    task.name = newProjectName;
+                    task.note = newNote;
+                    task.eventYear = newEventYear;
+                    task.eventMonth = newEventMonth;
+                    task.eventPeriod = newEventPeriod;
+                    updateCount++;
+                }
+            });
+            
+            // 儲存並重新渲染
+            saveTasks();
+            closeProjectEditModal();
+            renderGantt();
+            renderTaskList();
+            updateDataList();
+            
+            // 成功提示
+            alert(`✅ 已成功更新 ${updateCount} 個任務`);
+        }
+
+        function closeProjectEditModal() {
+            document.getElementById('projectEditModal').classList.add('hidden');
+            // 清除表單資料
+            document.getElementById('projectEditName').value = '';
+            document.getElementById('projectEditNote').value = '';
+            if (document.getElementById('projectEditModal').dataset.originalProjectName) {
+                delete document.getElementById('projectEditModal').dataset.originalProjectName;
+            }
+        }
+
+        // 支援 ESC 鍵關閉對話框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const projectEditModal = document.getElementById('projectEditModal');
+                if (projectEditModal && !projectEditModal.classList.contains('hidden')) {
+                    closeProjectEditModal();
+                }
+            }
+        });
+
+        function renderSettingsUI() { /* Usually just part of init */ }
+
+        function renderSettingsParams() {
+            const cList = document.getElementById('settingsCatList');
+            cList.innerHTML = settings.categories.map((c, i) => `
+                <li class="flex justify-between items-center bg-gray-50 px-2 py-1 rounded text-sm">
+                    <span>${c}</span>
+                    <button onclick="removeCategory(${i})" class="text-red-400 hover:text-red-600">×</button>
+                </li>
+            `).join('');
+
+            const fList = document.getElementById('settingsFuncList');
+            fList.innerHTML = settings.functions.map((f, i) => `
+                <li class="flex justify-between items-center bg-gray-50 px-2 py-1 rounded text-sm border-l-4" style="border-left-color: ${f.color}">
+                    <div class="flex flex-col">
+                        <span class="font-bold text-xs text-gray-500">${f.code}</span>
+                        <span>${f.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                         <button onclick="editFunction(${i})" class="text-blue-400 hover:text-blue-600">✎</button>
+                         <button onclick="removeFunction(${i})" class="text-red-400 hover:text-red-600">×</button>
+                    </div>
+                </li>
+            `).join('');
+
+            const hList = document.getElementById('settingsHolList');
+            hList.innerHTML = settings.holidays.map((h, i) => `
+                <li class="flex justify-between items-center bg-gray-50 px-2 py-1 rounded text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-sm border" style="background-color:${h.color}"></span>
+                        <span>${h.name}</span>
+                        <span class="text-xs text-gray-400">(${h.startM}/${['上', '中', '下'][h.startP]} - ${h.endM}/${['上', '中', '下'][h.endP]})</span>
+                    </div>
+                    <button onclick="removeHoliday(${i})" class="text-red-400 hover:text-red-600">×</button>
+                </li>
+            `).join('');
+        }
+
+        function addCategory() {
+            const input = document.getElementById('newCatInput');
+            const val = input.value.trim();
+            if (val && !settings.categories.includes(val)) {
+                settings.categories.push(val);
+                saveSettings();
+                renderSettingsParams();
+                input.value = '';
+            }
+        }
+        function removeCategory(idx) {
+            settings.categories.splice(idx, 1);
+            saveSettings();
+            renderSettingsParams();
+        }
+
+        // --- Function Editing Logic ---
+        function handleFunctionSubmit() {
+            const idx = parseInt(document.getElementById('editFuncIdx').value);
+            const code = document.getElementById('newFuncCode').value.trim().toUpperCase();
+            const name = document.getElementById('newFuncName').value.trim();
+            const color = document.getElementById('newFuncColor').value;
+
+            if (!code || !name) return;
+
+            if (idx === -1) {
+                // Add New
+                if (settings.functions.some(f => f.code === code)) {
+                    alert('代號已存在'); return;
+                }
+                settings.functions.push({ code, name, color });
+            } else {
+                // Update Existing
+                // Logic check: if code changed (which is disabled but just in case), check collision
+                if (settings.functions.some((f, i) => i !== idx && f.code === code)) {
+                    alert('代號已存在'); return;
+                }
+                settings.functions[idx] = { code, name, color };
+            }
+
+            saveSettings();
+            renderSettingsParams();
+            renderGantt(); // Refresh chart colors/names
+            updateDataList(); // Refresh dropdowns if needed (though cats are separate)
+            resetFuncForm();
+        }
+
+        function editFunction(idx) {
+            const f = settings.functions[idx];
+            document.getElementById('editFuncIdx').value = idx;
+            const codeInput = document.getElementById('newFuncCode');
+            codeInput.value = f.code;
+            codeInput.disabled = true; // Lock code to prevent breaking refs
+
+            document.getElementById('newFuncName').value = f.name;
+            document.getElementById('newFuncColor').value = f.color;
+
+            document.getElementById('funcSubmitBtn').innerText = '更新';
+            document.getElementById('funcSubmitBtn').className = "bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 whitespace-nowrap";
+            document.getElementById('funcCancelBtn').classList.remove('hidden');
+        }
+
+        function resetFuncForm() {
+            document.getElementById('editFuncIdx').value = '-1';
+            const codeInput = document.getElementById('newFuncCode');
+            codeInput.value = '';
+            codeInput.disabled = false;
+
+            document.getElementById('newFuncName').value = '';
+            document.getElementById('newFuncColor').value = '#6366f1';
+
+            document.getElementById('funcSubmitBtn').innerText = '新增';
+            document.getElementById('funcSubmitBtn').className = "bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 whitespace-nowrap";
+            document.getElementById('funcCancelBtn').classList.add('hidden');
+        }
+
+        function removeFunction(idx) {
+            if (settings.functions.length <= 1) { alert('至少保留一個職能'); return; }
+            settings.functions.splice(idx, 1);
+            saveSettings();
+            renderSettingsParams();
+        }
+
+        // --- Holiday Logic ---
+        function addHoliday() {
+            const name = document.getElementById('holName').value.trim();
+            const color = document.getElementById('holColor').value;
+            const startY = parseInt(document.getElementById('holStartY').value);
+            const startM = parseInt(document.getElementById('holStartM').value);
+            const startP = parseInt(document.getElementById('holStartP').value);
+            const endY = parseInt(document.getElementById('holEndY').value);
+            const endM = parseInt(document.getElementById('holEndM').value);
+            const endP = parseInt(document.getElementById('holEndP').value);
+
+            const sGPU = getGPU(startY, startM, startP);
+            const eGPU = getGPU(endY, endM, endP);
+
+            if (!name) { alert('請輸入假期名稱'); return; }
+            if (eGPU < sGPU) { alert('結束時間不能早於開始時間'); return; }
+
+            settings.holidays.push({
+                name, color,
+                startYear: startY, startMonth: startM, startPeriod: startP,
+                endYear: endY, endMonth: endM, endPeriod: endP
+            });
+
+            saveSettings();
+            renderSettingsParams();
+            renderGantt(); // Update view immediately
+            document.getElementById('holName').value = '';
+        }
+
+        function removeHoliday(idx) {
+            settings.holidays.splice(idx, 1);
+            saveSettings();
+            renderSettingsParams();
+            renderGantt();
+        }
+
+        function resetDefaultSettings() {
+            if (confirm('重置將恢復預設分類與職能，確定嗎？')) {
+                settings = JSON.parse(JSON.stringify(defaultSettings));
+                saveSettings();
+                renderSettingsParams();
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('marketing_settings_v2', JSON.stringify(settings));
+            renderFormOptions(); // Reflect immediately if needed
+        }
+
+        // --- Migration from V1 to V2 Data (One-time check) ---
+        (function migrateData() {
+            if (!localStorage.getItem('marketing_tasks_v2') && localStorage.getItem('marketing_tasks')) {
+                const old = JSON.parse(localStorage.getItem('marketing_tasks'));
+                const nowY = new Date().getFullYear();
+                tasks = old.map(t => {
+                    // Reverse calc: (M-1)*3 + P + 1 = idx
+                    const startM = Math.ceil(t.startIdx / 3);
+                    const startP = (t.startIdx - 1) % 3;
+                    const endM = Math.ceil((t.startIdx + t.span - 1) / 3);
+                    const endP = ((t.startIdx + t.span - 1) - 1) % 3;
+                    const evM = Math.ceil(t.eventIdx / 3);
+                    const evP = (t.eventIdx - 1) % 3;
+
+                    return {
+                        id: t.id,
+                        name: t.name,
+                        category: t.category,
+                        func: t.func,
+                        startYear: nowY, startMonth: startM, startPeriod: startP,
+                        endYear: nowY, endMonth: endM, endPeriod: endP,
+                        eventYear: nowY, eventMonth: evM, eventPeriod: evP,
+                        customSortIndex: 9999
+                    };
+                });
+                saveTasks();
+                // Optionally clear old key to avoid re-migration
+                // localStorage.removeItem('marketing_tasks');
+            }
+        })();
+
+        // --- Sidebar ---
+        function toggleSidebar() {
+            const sb = document.getElementById('mainSidebar');
+            const toggleBtn = document.getElementById('sidebarToggle');
+            if (sb.classList.contains('w-0')) {
+                sb.classList.remove('w-0', 'overflow-hidden');
+                sb.classList.add('w-[320px]');
+                toggleBtn.innerHTML = '☰';
+                toggleBtn.title = '收合側欄';
+            } else {
+                sb.classList.remove('w-[320px]');
+                sb.classList.add('w-0', 'overflow-hidden');
+                toggleBtn.innerHTML = '☰';
+                toggleBtn.title = '展開側欄';
+            }
+        }
+
+        // --- Export ---
+        function exportImage() {
+            const area = document.getElementById('captureArea');
+            const mainContainer = document.querySelector('main.gantt-container');
+            
+            if (!area) {
+                alert('無法找到要截圖的區域');
+                return;
+            }
+
+            // ===== 1. 鎖定視窗 =====
+            const originalScrollX = window.scrollX;
+            const originalScrollY = window.scrollY;
+            
+            // 記錄原始樣式
+            const originalBodyOverflow = document.body.style.overflow;
+            const originalBodyWidth = document.body.style.width;
+            const originalBodyHeight = document.body.style.height;
+            
+            const originalMainOverflow = mainContainer ? mainContainer.style.overflow : '';
+            const originalMainWidth = mainContainer ? mainContainer.style.width : '';
+            const originalMainHeight = mainContainer ? mainContainer.style.height : '';
+            
+            const originalAreaWidth = area.style.width;
+            const originalAreaHeight = area.style.height;
+
+            // ===== 2. DOM 變形 (Pre-Capture) =====
+            
+            // 強制 overflow 為 visible
+            document.body.style.overflow = 'visible';
+            if (mainContainer) {
+                mainContainer.style.overflow = 'visible';
+            }
+
+            // 取得完整尺寸（加上 padding 避免邊緣被切）
+            const padding = 20;
+            const scrollWidth = area.scrollWidth + padding;
+            const scrollHeight = area.scrollHeight + padding;
+
+            // 強制設定 captureArea 的寬高
+            area.style.width = scrollWidth + 'px';
+            area.style.height = scrollHeight + 'px';
+
+            // 找出所有 sticky 元素並暫時移除 sticky 定位
+            const stickyElements = [];
+            const allElements = area.querySelectorAll('*');
+            
+            allElements.forEach(el => {
+                const computedStyle = window.getComputedStyle(el);
+                if (computedStyle.position === 'sticky') {
+                    stickyElements.push({
+                        element: el,
+                        originalPosition: el.style.position,
+                        originalTop: el.style.top,
+                        originalLeft: el.style.left,
+                        originalRight: el.style.right,
+                        originalBottom: el.style.bottom,
+                        originalZIndex: el.style.zIndex
+                    });
+                    
+                    // 強制改為 relative，移除定位屬性
+                    el.style.position = 'relative';
+                    el.style.top = '';
+                    el.style.left = '';
+                    el.style.right = '';
+                    el.style.bottom = '';
+                    // 保留 z-index 以避免層疊問題（視情況可移除）
+                    // el.style.zIndex = '';
+                }
+            });
+
+            // ===== 3. 執行截圖 =====
+            const options = {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                windowWidth: scrollWidth,
+                windowHeight: scrollHeight,
+                backgroundColor: '#ffffff'
+            };
+
+            // 使用 setTimeout 確保 DOM 變更已生效
+            setTimeout(() => {
+                html2canvas(area, options).then(canvas => {
+                    // ===== 4. 復原 DOM (Post-Capture) =====
+                    
+                    // 恢復 sticky 元素的樣式
+                    stickyElements.forEach(({ element, originalPosition, originalTop, originalLeft, originalRight, originalBottom, originalZIndex }) => {
+                        element.style.position = originalPosition;
+                        element.style.top = originalTop;
+                        element.style.left = originalLeft;
+                        element.style.right = originalRight;
+                        element.style.bottom = originalBottom;
+                        element.style.zIndex = originalZIndex;
+                    });
+
+                    // 恢復容器樣式
+                    document.body.style.overflow = originalBodyOverflow;
+                    document.body.style.width = originalBodyWidth;
+                    document.body.style.height = originalBodyHeight;
+                    
+                    if (mainContainer) {
+                        mainContainer.style.overflow = originalMainOverflow;
+                        mainContainer.style.width = originalMainWidth;
+                        mainContainer.style.height = originalMainHeight;
+                    }
+
+                    area.style.width = originalAreaWidth;
+                    area.style.height = originalAreaHeight;
+
+                    // 恢復捲動位置
+                    window.scrollTo(originalScrollX, originalScrollY);
+
+                    // 建立下載連結
+                    const link = document.createElement('a');
+                    const dateStr = new Date().toISOString().slice(0, 10);
+                    link.download = `Marketing_Schedule_${dateStr}.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                }).catch(error => {
+                    // 發生錯誤時也要恢復所有樣式
+                    stickyElements.forEach(({ element, originalPosition, originalTop, originalLeft, originalRight, originalBottom, originalZIndex }) => {
+                        element.style.position = originalPosition;
+                        element.style.top = originalTop;
+                        element.style.left = originalLeft;
+                        element.style.right = originalRight;
+                        element.style.bottom = originalBottom;
+                        element.style.zIndex = originalZIndex;
+                    });
+
+                    document.body.style.overflow = originalBodyOverflow;
+                    document.body.style.width = originalBodyWidth;
+                    document.body.style.height = originalBodyHeight;
+                    
+                    if (mainContainer) {
+                        mainContainer.style.overflow = originalMainOverflow;
+                        mainContainer.style.width = originalMainWidth;
+                        mainContainer.style.height = originalMainHeight;
+                    }
+
+                    area.style.width = originalAreaWidth;
+                    area.style.height = originalAreaHeight;
+
+                    window.scrollTo(originalScrollX, originalScrollY);
+
+                    console.error('截圖失敗:', error);
+                    alert('截圖失敗，請稍後再試');
+                });
+            }, 100); // 給予 100ms 讓 DOM 變更生效
+        }
+
+        function exportCSV() {
+            let csv = "專案名稱,分類,職能,開始日期,結束日期,上線日期\n";
+            tasks.forEach(t => {
+                csv += `${t.name},${t.category},${getFuncName(t.func)},${t.startYear}/${t.startMonth}-${['上', '中', '下'][t.startPeriod]},${t.endYear}/${t.endMonth}-${['上', '中', '下'][t.endPeriod]},${t.eventYear}/${t.eventMonth}-${['上', '中', '下'][t.eventPeriod]}\n`;
+            });
+            const link = document.createElement("a");
+            link.href = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURI(csv);
+            link.download = `marketing_gantt_v2.csv`;
+            link.click();
+        }
+
+        // --- JSON Backup/Restore ---
+        function exportJSON() {
+            const data = {
+                version: "2.0",
+                timestamp: new Date().toISOString(),
+                tasks: tasks,
+                settings: settings
+            };
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `marketing_gantt_backup_${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (!data.tasks || !data.settings) {
+                        alert('無效的備份檔案格式');
+                        return;
+                    }
+
+                    if (confirm(`確定要還原備份嗎？\n這將會覆蓋當前所有資料！\n(備份時間: ${data.timestamp || '未知'})`)) {
+                        tasks = data.tasks;
+                        settings = data.settings;
+                        saveTasks();
+                        saveSettings();
+
+                        // Re-init UI
+                        init();
+                        alert('✅ 還原成功！');
+                    }
+                } catch (err) {
+                    alert('讀取檔案失敗：' + err);
+                }
+                // Reset input
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // --- Passcode Gate ---
+        const PASSCODE = 'justfont';
+        const AUTH_KEY = 'jf_gantt_auth';
+
+        function checkPasscode() {
+            const input = document.getElementById('passcodeInput').value;
+            if (input === PASSCODE) {
+                sessionStorage.setItem(AUTH_KEY, '1');
+                document.getElementById('passcodeGate').style.display = 'none';
+                document.getElementById('passcodeInput').value = '';
+            } else {
+                document.getElementById('passcodeError').classList.remove('hidden');
+                document.getElementById('passcodeInput').value = '';
+                document.getElementById('passcodeInput').focus();
+            }
+        }
+
+        (function initAuth() {
+            if (sessionStorage.getItem(AUTH_KEY) === '1') {
+                document.getElementById('passcodeGate').style.display = 'none';
+            } else {
+                setTimeout(() => document.getElementById('passcodeInput').focus(), 100);
+            }
+        })();
+
+        // Run
+        init();
+    </script>
+</body>
+
+</html>
