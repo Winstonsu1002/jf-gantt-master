@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-05-12T10:47:36.610Z",
+  "timestamp": "2026-05-12T11:00:10.163Z",
   "tasks": [
     {
       "id": 1766644161654,
@@ -613,23 +613,6 @@
       "customSortIndex": 12
     },
     {
-      "id": 1778481556629,
-      "name": "粉筆字",
-      "category": "新品上市",
-      "func": "PM",
-      "startYear": 2026,
-      "startMonth": 5,
-      "startPeriod": 1,
-      "endYear": 2026,
-      "endMonth": 5,
-      "endPeriod": 2,
-      "eventYear": 2026,
-      "eventMonth": 9,
-      "eventPeriod": 1,
-      "customSortIndex": 4,
-      "note": "9/15–10/15"
-    },
-    {
       "id": 1778580508955,
       "name": "粉筆字",
       "category": "品牌活動",
@@ -781,6 +764,23 @@
       "eventPeriod": 1,
       "customSortIndex": 2,
       "note": "9/15–10/1"
+    },
+    {
+      "id": 1778583581897,
+      "name": "粉筆字",
+      "category": "新品上市",
+      "func": "MKT",
+      "startYear": 2026,
+      "startMonth": 5,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 6,
+      "endPeriod": 0,
+      "eventYear": 2026,
+      "eventMonth": 9,
+      "eventPeriod": 1,
+      "customSortIndex": 4,
+      "note": "9/15–10/15"
     }
   ],
   "settings": {
@@ -796,11 +796,6 @@
     ],
     "functions": [
       {
-        "code": "PM",
-        "name": "PM/統籌 A",
-        "color": "#1f2937"
-      },
-      {
         "code": "MKT",
         "name": "BC",
         "color": "#eab308"
@@ -814,16 +809,6 @@
         "code": "DEV",
         "name": "Jason",
         "color": "#3b82f6"
-      },
-      {
-        "code": "ADS",
-        "name": "廣告投放",
-        "color": "#8b5cf6"
-      },
-      {
-        "code": "COM",
-        "name": "社群造勢 A",
-        "color": "#f27964"
       },
       {
         "code": "DSG-B",
