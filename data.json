@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-06-01T03:17:47.417Z",
+  "timestamp": "2026-07-07T06:07:30.723Z",
   "tasks": [
     {
       "id": 1766644161654,
@@ -252,7 +252,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3,
+      "customSortIndex": 2,
       "note": "8/6–8/12"
     },
     {
@@ -270,24 +270,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3
-    },
-    {
-      "id": 1766650513520,
-      "name": "商城活動 2 遮放返校日",
-      "category": "促銷專案",
-      "func": "DSG-D",
-      "startYear": 2026,
-      "startMonth": 6,
-      "startPeriod": 2,
-      "endYear": 2026,
-      "endMonth": 7,
-      "endPeriod": 2,
-      "eventYear": 2026,
-      "eventMonth": 9,
-      "eventPeriod": 1,
-      "customSortIndex": 2,
-      "note": "9/15–10/1"
+      "customSortIndex": 2
     },
     {
       "id": 1766650583577,
@@ -303,7 +286,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 2,
+      "customSortIndex": 1,
       "note": "9/15–10/1"
     },
     {
@@ -321,7 +304,7 @@
       "eventYear": 2026,
       "eventMonth": 12,
       "eventPeriod": 0,
-      "customSortIndex": 8
+      "customSortIndex": 7
     },
     {
       "id": 1766650863465,
@@ -338,7 +321,7 @@
       "eventYear": 2026,
       "eventMonth": 12,
       "eventPeriod": 0,
-      "customSortIndex": 8
+      "customSortIndex": 7
     },
     {
       "id": 1766650881562,
@@ -355,7 +338,7 @@
       "eventYear": 2026,
       "eventMonth": 12,
       "eventPeriod": 0,
-      "customSortIndex": 8
+      "customSortIndex": 7
     },
     {
       "id": 1766651010302,
@@ -372,7 +355,7 @@
       "eventYear": 2026,
       "eventMonth": 6,
       "eventPeriod": 0,
-      "customSortIndex": 0
+      "customSortIndex": 8
     },
     {
       "id": 1766651096758,
@@ -389,7 +372,7 @@
       "eventYear": 2026,
       "eventMonth": 6,
       "eventPeriod": 0,
-      "customSortIndex": 0
+      "customSortIndex": 8
     },
     {
       "id": 1766651188086,
@@ -406,7 +389,7 @@
       "eventYear": 2026,
       "eventMonth": 6,
       "eventPeriod": 0,
-      "customSortIndex": 0
+      "customSortIndex": 8
     },
     {
       "id": 1766656666201,
@@ -423,7 +406,7 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 1
+      "customSortIndex": 0
     },
     {
       "id": 1766656724270,
@@ -439,7 +422,7 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 1,
+      "customSortIndex": 0,
       "note": "7/3 開幕"
     },
     {
@@ -456,7 +439,7 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 1,
+      "customSortIndex": 0,
       "note": "7/3 開幕"
     },
     {
@@ -508,7 +491,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 5
+      "customSortIndex": 4
     },
     {
       "id": 1766659226083,
@@ -524,7 +507,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 5,
+      "customSortIndex": 4,
       "note": "8/1"
     },
     {
@@ -626,7 +609,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 5,
       "note": "9/15–10/15"
     },
     {
@@ -635,15 +618,15 @@
       "category": "新品上市",
       "func": "DSG-C",
       "startYear": 2026,
-      "startMonth": 7,
-      "startPeriod": 0,
+      "startMonth": 6,
+      "startPeriod": 2,
       "endYear": 2026,
-      "endMonth": 8,
-      "endPeriod": 0,
+      "endMonth": 7,
+      "endPeriod": 2,
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 5,
       "note": "9/15–10/15"
     },
     {
@@ -660,7 +643,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 5,
       "note": "9/15–10/15"
     },
     {
@@ -670,14 +653,14 @@
       "func": "DSG-B",
       "startYear": 2026,
       "startMonth": 6,
-      "startPeriod": 0,
+      "startPeriod": 2,
       "endYear": 2026,
-      "endMonth": 6,
+      "endMonth": 7,
       "endPeriod": 2,
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 2,
+      "customSortIndex": 1,
       "note": "9/15–10/1"
     },
     {
@@ -694,7 +677,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 4,
+      "customSortIndex": 3,
       "note": "8/1–8/10?"
     },
     {
@@ -711,7 +694,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 4,
+      "customSortIndex": 3,
       "note": "8/1–8/10?"
     },
     {
@@ -728,7 +711,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 4,
+      "customSortIndex": 3,
       "note": "8/1–8/10?"
     },
     {
@@ -745,7 +728,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3,
+      "customSortIndex": 2,
       "note": "8/6–8/12"
     },
     {
@@ -762,7 +745,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 2,
+      "customSortIndex": 1,
       "note": "9/15–10/1"
     },
     {
@@ -779,7 +762,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 6,
+      "customSortIndex": 5,
       "note": "9/15–10/15"
     },
     {
@@ -796,7 +779,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 7,
+      "customSortIndex": 6,
       "note": "8/1"
     },
     {
@@ -806,14 +789,14 @@
       "func": "DEV",
       "startYear": 2026,
       "startMonth": 6,
-      "startPeriod": 1,
+      "startPeriod": 2,
       "endYear": 2026,
-      "endMonth": 6,
-      "endPeriod": 2,
+      "endMonth": 7,
+      "endPeriod": 0,
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 7,
+      "customSortIndex": 6,
       "note": "8/1"
     },
     {
@@ -830,8 +813,25 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 5,
+      "customSortIndex": 4,
       "note": "8/1"
+    },
+    {
+      "id": 1783404426107,
+      "name": "文博會+實體禮物卡",
+      "category": "品牌活動",
+      "func": "DSG-D",
+      "startYear": 2026,
+      "startMonth": 6,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 7,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 8,
+      "eventPeriod": 0,
+      "customSortIndex": 2,
+      "note": "8/6–8/12"
     }
   ],
   "settings": {
