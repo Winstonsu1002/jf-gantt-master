@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-07-07T06:33:43.321Z",
+  "timestamp": "2026-07-07T06:35:31.705Z",
   "tasks": [
     {
       "id": 1766644161654,
@@ -911,7 +911,7 @@
       "startPeriod": 1,
       "endYear": 2026,
       "endMonth": 9,
-      "endPeriod": 1,
+      "endPeriod": 0,
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
@@ -925,10 +925,10 @@
       "func": "DEV",
       "startYear": 2026,
       "startMonth": 9,
-      "startPeriod": 2,
+      "startPeriod": 1,
       "endYear": 2026,
       "endMonth": 10,
-      "endPeriod": 2,
+      "endPeriod": 1,
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
