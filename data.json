@@ -1,6 +1,6 @@
 {
   "version": "2.0",
-  "timestamp": "2026-07-07T06:35:31.705Z",
+  "timestamp": "2026-07-07T08:06:19.963Z",
   "tasks": [
     {
       "id": 1766644161654,
@@ -17,7 +17,7 @@
       "eventYear": 2025,
       "eventMonth": 3,
       "eventPeriod": 1,
-      "customSortIndex": 10
+      "customSortIndex": 13
     },
     {
       "id": 1766644387379,
@@ -33,7 +33,7 @@
       "eventYear": 2025,
       "eventMonth": 3,
       "eventPeriod": 1,
-      "customSortIndex": 10
+      "customSortIndex": 13
     },
     {
       "id": 1766644627871,
@@ -50,7 +50,7 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 1,
-      "customSortIndex": 10
+      "customSortIndex": 13
     },
     {
       "id": 1766644875519,
@@ -67,7 +67,7 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 1,
-      "customSortIndex": 10
+      "customSortIndex": 13
     },
     {
       "id": 1766644917839,
@@ -83,7 +83,7 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 1,
-      "customSortIndex": 10
+      "customSortIndex": 13
     },
     {
       "id": 1766645048209,
@@ -100,7 +100,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 1,
-      "customSortIndex": 17
+      "customSortIndex": 20
     },
     {
       "id": 1766645188578,
@@ -117,7 +117,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 1,
-      "customSortIndex": 17
+      "customSortIndex": 20
     },
     {
       "id": 1766645235027,
@@ -134,7 +134,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 1,
-      "customSortIndex": 17
+      "customSortIndex": 20
     },
     {
       "id": 1766645568296,
@@ -151,7 +151,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 0,
-      "customSortIndex": 16
+      "customSortIndex": 19
     },
     {
       "id": 1766645849484,
@@ -168,7 +168,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 0,
-      "customSortIndex": 16
+      "customSortIndex": 19
     },
     {
       "id": 1766645873301,
@@ -185,7 +185,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 0,
-      "customSortIndex": 16
+      "customSortIndex": 19
     },
     {
       "id": 1766645942236,
@@ -202,7 +202,7 @@
       "eventYear": 2026,
       "eventMonth": 5,
       "eventPeriod": 0,
-      "customSortIndex": 16
+      "customSortIndex": 19
     },
     {
       "id": 1766646233878,
@@ -219,7 +219,7 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 0,
-      "customSortIndex": 12
+      "customSortIndex": 15
     },
     {
       "id": 1766646707182,
@@ -236,11 +236,11 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 0,
-      "customSortIndex": 12
+      "customSortIndex": 15
     },
     {
       "id": 1766647326428,
-      "name": "文博會+實體禮物卡",
+      "name": "文博會",
       "category": "品牌活動",
       "func": "MKT-B",
       "startYear": 2026,
@@ -257,7 +257,7 @@
     },
     {
       "id": 1766647954172,
-      "name": "文博會+實體禮物卡",
+      "name": "文博會",
       "category": "品牌活動",
       "note": "8/6–8/12",
       "func": "DSG-B",
@@ -293,18 +293,18 @@
       "id": 1766650834570,
       "name": "商城活動 3",
       "category": "促銷專案",
-      "note": "12/8–1/7",
       "func": "MKT-C",
       "startYear": 2026,
-      "startMonth": 9,
-      "startPeriod": 0,
+      "startMonth": 8,
+      "startPeriod": 1,
       "endYear": 2026,
       "endMonth": 9,
       "endPeriod": 2,
       "eventYear": 2026,
       "eventMonth": 12,
       "eventPeriod": 0,
-      "customSortIndex": 8
+      "customSortIndex": 11,
+      "note": "12/8–1/7"
     },
     {
       "id": 1766650881562,
@@ -321,7 +321,7 @@
       "eventYear": 2026,
       "eventMonth": 12,
       "eventPeriod": 0,
-      "customSortIndex": 8
+      "customSortIndex": 11
     },
     {
       "id": 1766651010302,
@@ -338,7 +338,7 @@
       "eventYear": 2026,
       "eventMonth": 6,
       "eventPeriod": 0,
-      "customSortIndex": 11
+      "customSortIndex": 14
     },
     {
       "id": 1766651096758,
@@ -355,7 +355,7 @@
       "eventYear": 2026,
       "eventMonth": 6,
       "eventPeriod": 0,
-      "customSortIndex": 11
+      "customSortIndex": 14
     },
     {
       "id": 1766651188086,
@@ -372,7 +372,7 @@
       "eventYear": 2026,
       "eventMonth": 6,
       "eventPeriod": 0,
-      "customSortIndex": 11
+      "customSortIndex": 14
     },
     {
       "id": 1766656666201,
@@ -389,7 +389,7 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 9
+      "customSortIndex": 12
     },
     {
       "id": 1766656724270,
@@ -405,7 +405,7 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 9,
+      "customSortIndex": 12,
       "note": "7/3 開幕"
     },
     {
@@ -422,7 +422,7 @@
       "eventYear": 2026,
       "eventMonth": 7,
       "eventPeriod": 0,
-      "customSortIndex": 9,
+      "customSortIndex": 12,
       "note": "7/3 開幕"
     },
     {
@@ -440,7 +440,7 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 1,
-      "customSortIndex": 13
+      "customSortIndex": 16
     },
     {
       "id": 1766658489670,
@@ -457,11 +457,11 @@
       "eventYear": 2026,
       "eventMonth": 4,
       "eventPeriod": 0,
-      "customSortIndex": 14
+      "customSortIndex": 17
     },
     {
       "id": 1766659187781,
-      "name": "實體字樣",
+      "name": "jf 大字典",
       "category": "品牌活動",
       "note": "8/1",
       "func": "MKT-B",
@@ -474,11 +474,11 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3
+      "customSortIndex": 2
     },
     {
       "id": 1766659226083,
-      "name": "實體字樣",
+      "name": "jf 大字典",
       "category": "品牌活動",
       "func": "MKT-B",
       "startYear": 2026,
@@ -490,7 +490,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3,
+      "customSortIndex": 2,
       "note": "8/1"
     },
     {
@@ -508,7 +508,7 @@
       "eventYear": 2026,
       "eventMonth": 4,
       "eventPeriod": 2,
-      "customSortIndex": 15
+      "customSortIndex": 18
     },
     {
       "id": 1767067909641,
@@ -525,7 +525,7 @@
       "eventYear": 2026,
       "eventMonth": 4,
       "eventPeriod": 2,
-      "customSortIndex": 15
+      "customSortIndex": 18
     },
     {
       "id": 1767067947026,
@@ -542,7 +542,7 @@
       "eventYear": 2026,
       "eventMonth": 3,
       "eventPeriod": 0,
-      "customSortIndex": 12
+      "customSortIndex": 15
     },
     {
       "id": 1768964313233,
@@ -559,7 +559,7 @@
       "eventYear": 2026,
       "eventMonth": 4,
       "eventPeriod": 2,
-      "customSortIndex": 15
+      "customSortIndex": 18
     },
     {
       "id": 1770028129791,
@@ -576,7 +576,7 @@
       "eventYear": 2026,
       "eventMonth": 4,
       "eventPeriod": 2,
-      "customSortIndex": 15
+      "customSortIndex": 18
     },
     {
       "id": 1778580508955,
@@ -592,7 +592,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 8,
       "note": "9/15–10/15"
     },
     {
@@ -609,7 +609,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 8,
       "note": "9/15–10/15"
     },
     {
@@ -626,7 +626,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 8,
       "note": "9/15–10/15"
     },
     {
@@ -660,7 +660,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 2,
+      "customSortIndex": 3,
       "note": "8/1–8/10?"
     },
     {
@@ -677,7 +677,7 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 2,
+      "customSortIndex": 3,
       "note": "8/1–8/10?"
     },
     {
@@ -694,12 +694,12 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 2,
+      "customSortIndex": 3,
       "note": "8/1–8/10?"
     },
     {
       "id": 1778581994939,
-      "name": "文博會+實體禮物卡",
+      "name": "文博會",
       "category": "品牌活動",
       "func": "DSG-D",
       "startYear": 2026,
@@ -745,7 +745,7 @@
       "eventYear": 2026,
       "eventMonth": 9,
       "eventPeriod": 1,
-      "customSortIndex": 5,
+      "customSortIndex": 8,
       "note": "9/15–10/15"
     },
     {
@@ -784,7 +784,7 @@
     },
     {
       "id": 1780283859596,
-      "name": "實體字樣",
+      "name": "jf 大字典",
       "category": "品牌活動",
       "func": "OSC",
       "startYear": 2026,
@@ -796,12 +796,12 @@
       "eventYear": 2026,
       "eventMonth": 8,
       "eventPeriod": 0,
-      "customSortIndex": 3,
+      "customSortIndex": 2,
       "note": "8/1"
     },
     {
       "id": 1783404426107,
-      "name": "文博會+實體禮物卡",
+      "name": "文博會",
       "category": "品牌活動",
       "func": "DSG-D",
       "startYear": 2026,
@@ -830,7 +830,7 @@
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
-      "customSortIndex": 6,
+      "customSortIndex": 9,
       "note": "11/2"
     },
     {
@@ -847,7 +847,7 @@
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
-      "customSortIndex": 6,
+      "customSortIndex": 9,
       "note": "11/2"
     },
     {
@@ -864,7 +864,7 @@
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
-      "customSortIndex": 6,
+      "customSortIndex": 9,
       "note": "11/2"
     },
     {
@@ -881,7 +881,7 @@
       "eventYear": 2026,
       "eventMonth": 12,
       "eventPeriod": 0,
-      "customSortIndex": 8,
+      "customSortIndex": 11,
       "note": "12/8–1/7"
     },
     {
@@ -890,15 +890,15 @@
       "category": "品牌活動",
       "func": "MKT-B",
       "startYear": 2026,
-      "startMonth": 8,
-      "startPeriod": 1,
+      "startMonth": 9,
+      "startPeriod": 0,
       "endYear": 2026,
       "endMonth": 10,
       "endPeriod": 2,
       "eventYear": 2026,
       "eventMonth": 10,
       "eventPeriod": 2,
-      "customSortIndex": 7,
+      "customSortIndex": 10,
       "note": ""
     },
     {
@@ -915,7 +915,7 @@
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
-      "customSortIndex": 6,
+      "customSortIndex": 9,
       "note": "11/2"
     },
     {
@@ -932,8 +932,161 @@
       "eventYear": 2026,
       "eventMonth": 11,
       "eventPeriod": 0,
-      "customSortIndex": 6,
+      "customSortIndex": 9,
       "note": "11/2"
+    },
+    {
+      "id": 1783408278350,
+      "name": "產品登錄與成就徽章",
+      "category": "商城迭代",
+      "func": "DSG",
+      "startYear": 2026,
+      "startMonth": 7,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 8,
+      "endPeriod": 0,
+      "eventYear": 2026,
+      "eventMonth": 8,
+      "eventPeriod": 0,
+      "customSortIndex": 5,
+      "note": "8/6"
+    },
+    {
+      "id": 1783408336648,
+      "name": "產品登錄與成就徽章",
+      "category": "商城迭代",
+      "func": "DEV",
+      "startYear": 2026,
+      "startMonth": 7,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 8,
+      "endPeriod": 0,
+      "eventYear": 2026,
+      "eventMonth": 8,
+      "eventPeriod": 0,
+      "customSortIndex": 5,
+      "note": "8/6"
+    },
+    {
+      "id": 1783408434798,
+      "name": "客服一站式入口",
+      "category": "研發",
+      "func": "MKT-B",
+      "startYear": 2026,
+      "startMonth": 7,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 7,
+      "endPeriod": 0,
+      "eventYear": 2026,
+      "eventMonth": 9,
+      "eventPeriod": 0,
+      "customSortIndex": 6,
+      "note": "大約九月"
+    },
+    {
+      "id": 1783408499965,
+      "name": "客服一站式入口",
+      "category": "研發",
+      "func": "DEV",
+      "startYear": 2026,
+      "startMonth": 7,
+      "startPeriod": 1,
+      "endYear": 2026,
+      "endMonth": 7,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 9,
+      "eventPeriod": 0,
+      "customSortIndex": 6,
+      "note": "大約九月"
+    },
+    {
+      "id": 1783408716151,
+      "name": "松菸風格店家",
+      "category": "品牌活動",
+      "func": "DSG-B",
+      "startYear": 2026,
+      "startMonth": 9,
+      "startPeriod": 0,
+      "endYear": 2026,
+      "endMonth": 10,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 10,
+      "eventPeriod": 2,
+      "customSortIndex": 10,
+      "note": ""
+    },
+    {
+      "id": 1783408741569,
+      "name": "松菸風格店家",
+      "category": "品牌活動",
+      "func": "MKT-C",
+      "startYear": 2026,
+      "startMonth": 8,
+      "startPeriod": 2,
+      "endYear": 2026,
+      "endMonth": 9,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 10,
+      "eventPeriod": 2,
+      "customSortIndex": 10,
+      "note": ""
+    },
+    {
+      "id": 1783408785250,
+      "name": "松菸風格店家",
+      "category": "品牌活動",
+      "func": "DSG-D",
+      "startYear": 2026,
+      "startMonth": 9,
+      "startPeriod": 1,
+      "endYear": 2026,
+      "endMonth": 9,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 10,
+      "eventPeriod": 2,
+      "customSortIndex": 10,
+      "note": ""
+    },
+    {
+      "id": 1783408901281,
+      "name": "商城活動 3",
+      "category": "促銷專案",
+      "func": "MKT",
+      "startYear": 2026,
+      "startMonth": 8,
+      "startPeriod": 1,
+      "endYear": 2026,
+      "endMonth": 9,
+      "endPeriod": 2,
+      "eventYear": 2026,
+      "eventMonth": 12,
+      "eventPeriod": 0,
+      "customSortIndex": 7,
+      "note": "八月中下到九月"
+    },
+    {
+      "id": 1783408978816,
+      "name": "造字鼓勵元營運",
+      "category": "新品上市",
+      "func": "MKT-B",
+      "startYear": 2026,
+      "startMonth": 7,
+      "startPeriod": 2,
+      "endYear": 2026,
+      "endMonth": 8,
+      "endPeriod": 1,
+      "eventYear": 2026,
+      "eventMonth": 9,
+      "eventPeriod": 1,
+      "customSortIndex": 7,
+      "note": "八月中下到九月"
     }
   ],
   "settings": {
